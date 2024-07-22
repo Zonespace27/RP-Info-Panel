@@ -2,6 +2,8 @@ package com.zonespace.rpplayerinfo.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.zonespace.rpplayerinfo.RPPlayerInfo;
+import com.zonespace.rpplayerinfo.networking.ModMessages;
+import com.zonespace.rpplayerinfo.networking.packet.RoundRobinSyncC2SPacket;
 
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -37,6 +39,7 @@ public class KeybindHandler {
     
     public static void handleKeyInputEvent(TickEvent.ClientTickEvent event) {
         if(OPEN_RP_MENU_KEYBIND.consumeClick()) {
+			ModMessages.sendToServer(new RoundRobinSyncC2SPacket());
             openRPMenu();
         }
     }
@@ -50,7 +53,7 @@ public class KeybindHandler {
 		}
         HitResult rayTrace = mc.hitResult;
         if(rayTrace.getType() != HitResult.Type.ENTITY) {
-			DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientHooks.openRPInfoScreen(player));
+			DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientHooks.openRPInfoScreen(player, true));
 			return;
         }
         EntityHitResult entityRayTraceResult = (EntityHitResult) rayTrace;
@@ -59,7 +62,7 @@ public class KeybindHandler {
         }
             
         //playerTarget.giveExperienceLevels(10); // replace later
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientHooks.openRPInfoScreen(playerTarget));
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientHooks.openRPInfoScreen(playerTarget, false));
     }
 
     /*

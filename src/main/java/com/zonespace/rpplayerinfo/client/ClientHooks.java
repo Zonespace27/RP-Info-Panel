@@ -6,7 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
 
 public class ClientHooks {
-    public static void openRPInfoScreen(Player targetPlayer) {
-        Minecraft.getInstance().setScreen(new RPInfoScreen(targetPlayer));
+    public static void openRPInfoScreen(Player targetPlayer, boolean isOwner) {
+        Minecraft.getInstance().setScreen(new RPInfoScreen(targetPlayer, isOwner));
     }
 }

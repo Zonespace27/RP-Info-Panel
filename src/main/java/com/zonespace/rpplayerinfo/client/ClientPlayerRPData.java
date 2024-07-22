@@ -8,6 +8,7 @@ public class ClientPlayerRPData {
     private static int heightInches = 8;
     private static int heightFeet = 5;
     private static String description = "Empty description";
+    private static String name = "John Doe";
 
     public static void setPermissionToKill(EPlayerPermission new_ptk) {
         ClientPlayerRPData.permissionToKill = new_ptk;
@@ -47,5 +48,13 @@ public class ClientPlayerRPData {
 
     public static String getDescription() {
         return ClientPlayerRPData.description;
+    }
+
+    public static void setName(String str) {
+        ClientPlayerRPData.name = str;
+    }
+
+    public static String getName() {
+        return ClientPlayerRPData.name;
     }
 }

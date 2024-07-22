@@ -9,6 +9,7 @@ public class PlayerRPData {
     private int heightInches = 8;
     private int heightFeet = 5;
     private String description = "Empty description";
+    private String name = "John Doe";
 
     public void setPermissionToKill(EPlayerPermission new_ptk) {
         this.permissionToKill = new_ptk;
@@ -50,6 +51,13 @@ public class PlayerRPData {
         return description;
     }
 
+    public void setName(String str) {
+        name = str;
+    }
+
+    public String getName() {
+        return name;
+    }
 
     public void copyFrom(PlayerRPData source) {
         this.permissionToKill = source.permissionToKill;
@@ -57,6 +65,7 @@ public class PlayerRPData {
         this.heightInches = source.heightInches;
         this.heightFeet = source.heightFeet;
         this.description = source.description;
+        this.name = source.name;
     }
 
     public void saveNBTData(CompoundTag nbt) {
@@ -65,6 +74,7 @@ public class PlayerRPData {
         nbt.putInt("heightInches", heightInches);
         nbt.putInt("heightFeet", heightFeet);
         nbt.putString("description", description);
+        nbt.putString("name", name);
     }
 
     public void loadNBTData(CompoundTag nbt) {
@@ -73,5 +83,6 @@ public class PlayerRPData {
         heightInches = nbt.getInt("heightInches");
         heightFeet = nbt.getInt("heightFeet");
         description = nbt.getString("description");
+        name = nbt.getString("name");
     }
 }

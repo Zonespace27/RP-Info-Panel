@@ -5,6 +5,7 @@ import org.lwjgl.system.windows.MSG;
 import com.zonespace.rpplayerinfo.RPPlayerInfo;
 import com.zonespace.rpplayerinfo.networking.packet.PlayerDataSyncC2SPacket;
 import com.zonespace.rpplayerinfo.networking.packet.PlayerDataSyncS2CPacket;
+import com.zonespace.rpplayerinfo.networking.packet.RoundRobinSyncC2SPacket;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -30,16 +31,22 @@ public class ModMessages {
 
         INSTANCE = net;
 
-        net.messageBuilder(PlayerDataSyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
+        net.messageBuilder(PlayerDataSyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
             .decoder(PlayerDataSyncS2CPacket::new)
             .encoder(PlayerDataSyncS2CPacket::toBytes)
             .consumerMainThread(PlayerDataSyncS2CPacket::handle)
             .add();
 
-        net.messageBuilder(PlayerDataSyncC2SPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+        net.messageBuilder(PlayerDataSyncC2SPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
             .decoder(PlayerDataSyncC2SPacket::new)
             .encoder(PlayerDataSyncC2SPacket::toBytes)
             .consumerMainThread(PlayerDataSyncC2SPacket::handle)
+            .add();
+
+        net.messageBuilder(RoundRobinSyncC2SPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
+            .decoder(RoundRobinSyncC2SPacket::new)
+            .encoder(RoundRobinSyncC2SPacket::toBytes)
+            .consumerMainThread(RoundRobinSyncC2SPacket::handle)
             .add();
     }
 

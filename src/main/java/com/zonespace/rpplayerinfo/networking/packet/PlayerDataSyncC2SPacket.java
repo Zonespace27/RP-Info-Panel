@@ -16,13 +16,15 @@ public class PlayerDataSyncC2SPacket {
     private final int heightInches;
     private final int heightFeet;
     private final String description;
+    private final String name;
 
-    public PlayerDataSyncC2SPacket(EPlayerPermission permissionToKill, EPlayerPermission permissionToMaim, int heightInches, int heightFeet, String description) {
+    public PlayerDataSyncC2SPacket(EPlayerPermission permissionToKill, EPlayerPermission permissionToMaim, int heightInches, int heightFeet, String description, String name) {
         this.permissionToKill = permissionToKill;
         this.permissionToMaim = permissionToMaim;
         this.heightInches = heightInches;
         this.heightFeet = heightFeet;
         this.description = description;
+        this.name = name;
     }
 
     public PlayerDataSyncC2SPacket(FriendlyByteBuf buf) {
@@ -31,6 +33,7 @@ public class PlayerDataSyncC2SPacket {
         heightInches = buf.readInt();
         heightFeet = buf.readInt();
         description = buf.readUtf();
+        name = buf.readUtf();
     }
 
     public void toBytes(FriendlyByteBuf buf) {
@@ -39,6 +42,7 @@ public class PlayerDataSyncC2SPacket {
         buf.writeInt(heightInches);
         buf.writeInt(heightFeet);
         buf.writeUtf(description);
+        buf.writeUtf(name);
     }
 
     public boolean handle(Supplier<NetworkEvent.Context> supplier) {
@@ -53,6 +57,7 @@ public class PlayerDataSyncC2SPacket {
                 rpData.setHeightInches(heightInches);
                 rpData.setHeightFeet(heightFeet);
                 rpData.setDescription(description);
+                rpData.setName(name);
             });
         });
         return true;
