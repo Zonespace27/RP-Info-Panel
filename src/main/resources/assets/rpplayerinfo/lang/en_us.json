@@ -1,0 +1,11 @@
+{
+    "gui.rpplayerinfo.rp_info_screen": "RP Information Menu",
+    "gui.rpplayerinfo.rp_info_screen.button.permission_button.no": "No",
+    "gui.rpplayerinfo.rp_info_screen.button.permission_button.ask": "Ask",
+    "gui.rpplayerinfo.rp_info_screen.button.permission_button.yes": "Yes",
+    "gui.rpplayerinfo.rp_info_screen.string.name": "Name:",
+    "gui.rpplayerinfo.rp_info_screen.string.height": "Height:",
+    "gui.rpplayerinfo.rp_info_screen.string.desc": "Description:",
+    "gui.rpplayerinfo.rp_info_screen.string.ptm": "Permission To Maim:",
+    "gui.rpplayerinfo.rp_info_screen.string.ptk": "Permission To Kill:"
+}
