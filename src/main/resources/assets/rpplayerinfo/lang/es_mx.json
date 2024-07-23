@@ -1,0 +1,23 @@
+{
+  "gui.rpplayerinfo.rp_info_screen": "Menú de información de RP",
+  "gui.rpplayerinfo.rp_info_screen.button.gender_button.male": "Masculino",
+  "gui.rpplayerinfo.rp_info_screen.button.gender_button.female": "Femenina",
+  "gui.rpplayerinfo.rp_info_screen.button.gender_button.neuter": "Ninguno",
+  "gui.rpplayerinfo.rp_info_screen.button.permission_button.no": "No",
+  "gui.rpplayerinfo.rp_info_screen.button.permission_button.ask": "Preguntar",
+  "gui.rpplayerinfo.rp_info_screen.button.permission_button.yes": "Sí",
+  "gui.rpplayerinfo.rp_info_screen.button.close": "Cerrar",
+  "gui.rpplayerinfo.rp_info_screen.button.view": "ver descripción",
+  "gui.rpplayerinfo.rp_info_screen.string.title": "'s información de jugeo de roles",
+  "gui.rpplayerinfo.rp_info_screen.string.name": "Nombre:",
+  "gui.rpplayerinfo.rp_info_screen.string.height": "Altura:",
+  "gui.rpplayerinfo.rp_info_screen.string.desc": "Descripción:",
+  "gui.rpplayerinfo.rp_info_screen.string.desc.title": "'s Descripción",
+  "gui.rpplayerinfo.rp_info_screen.string.age": "Edad:",
+  "gui.rpplayerinfo.rp_info_screen.string.gender": "Género:",
+  "gui.rpplayerinfo.rp_info_screen.string.race": "Raza:",
+  "gui.rpplayerinfo.rp_info_screen.string.ptm": "Permiso de Mutilar",
+  "gui.rpplayerinfo.rp_info_screen.string.ptm.short": "Mutilar:",
+  "gui.rpplayerinfo.rp_info_screen.string.ptk": "Permiso de Matar:",
+  "gui.rpplayerinfo.rp_info_screen.string.ptk.short": "Matar:"
+}
