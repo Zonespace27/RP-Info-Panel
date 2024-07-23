@@ -10,9 +10,9 @@ public class PermissionStringConverter {
             case "Ask":
                 return EPlayerPermission.PERMISSION_ASK;
             case "No":
+            default:
                 return EPlayerPermission.PERMISSION_NO;
         }
-        return null; // realistically this should throw an error
     }
 
     public static String permissionEnumToString(EPlayerPermission permissionEnum) {
@@ -22,8 +22,8 @@ public class PermissionStringConverter {
             case PERMISSION_ASK:
                 return "Ask";
             case PERMISSION_NO:
+            default:
                 return "No";
         }
-        return null; // same here but this should never happen
     }
 }

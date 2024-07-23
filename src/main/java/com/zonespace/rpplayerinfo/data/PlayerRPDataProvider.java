@@ -30,14 +30,12 @@ public class PlayerRPDataProvider implements ICapabilityProvider, INBTSerializab
     public CompoundTag serializeNBT() {
         CompoundTag nbt = new CompoundTag();
         createPlayerRPData().saveNBTData(nbt);
-        System.out.println("Serialized");
         return nbt;
     }
 
     @Override
     public void deserializeNBT(CompoundTag nbt) {
         createPlayerRPData().loadNBTData(nbt);
-        System.out.println("Deserialized");
     }
 
     @Override

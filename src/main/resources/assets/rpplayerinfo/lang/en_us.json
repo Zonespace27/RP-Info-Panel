@@ -1,15 +1,23 @@
 {
   "gui.rpplayerinfo.rp_info_screen": "RP Information Menu",
+  "gui.rpplayerinfo.rp_info_screen.button.gender_button.male": "Male",
+  "gui.rpplayerinfo.rp_info_screen.button.gender_button.female": "Female",
+  "gui.rpplayerinfo.rp_info_screen.button.gender_button.neuter": "None",
   "gui.rpplayerinfo.rp_info_screen.button.permission_button.no": "No",
   "gui.rpplayerinfo.rp_info_screen.button.permission_button.ask": "Ask",
   "gui.rpplayerinfo.rp_info_screen.button.permission_button.yes": "Yes",
   "gui.rpplayerinfo.rp_info_screen.button.close": "Close",
-  "gui.rpplayerinfo.rp_info_screen.button.view": "View",
-  "gui.rpplayerinfo.rp_info_screen.button.edit": "Edit",
+  "gui.rpplayerinfo.rp_info_screen.button.view": "View Description",
+  "gui.rpplayerinfo.rp_info_screen.string.title": "'s Roleplay Info",
   "gui.rpplayerinfo.rp_info_screen.string.name": "Name:",
   "gui.rpplayerinfo.rp_info_screen.string.height": "Height:",
   "gui.rpplayerinfo.rp_info_screen.string.desc": "Description:",
+  "gui.rpplayerinfo.rp_info_screen.string.desc.title": "'s Description",
+  "gui.rpplayerinfo.rp_info_screen.string.age": "Age:",
+  "gui.rpplayerinfo.rp_info_screen.string.gender": "Gender:",
+  "gui.rpplayerinfo.rp_info_screen.string.race": "Race:",
   "gui.rpplayerinfo.rp_info_screen.string.ptm": "Permission To Maim:",
+  "gui.rpplayerinfo.rp_info_screen.string.ptm.short": "Maim:",
   "gui.rpplayerinfo.rp_info_screen.string.ptk": "Permission To Kill:",
-  "gui.rpplayerinfo.rp_info_screen.string.desc.title": "'s Description"
+  "gui.rpplayerinfo.rp_info_screen.string.ptk.short": "Kill:"
 }
