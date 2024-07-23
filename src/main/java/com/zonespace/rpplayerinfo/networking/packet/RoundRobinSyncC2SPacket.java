@@ -22,7 +22,7 @@ public class RoundRobinSyncC2SPacket {
     public boolean handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context context = supplier.get();
         context.enqueueWork(() -> {
-            // This is on the server
+            // on the server
             ServerPlayer player = context.getSender();
 
             EPlayerPermission permissionToKill = ClientPlayerRPData.getPermissionToKill();

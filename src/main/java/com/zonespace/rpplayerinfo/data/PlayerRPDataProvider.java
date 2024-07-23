@@ -13,7 +13,6 @@ import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
 
 public class PlayerRPDataProvider implements ICapabilityProvider, INBTSerializable<CompoundTag> {
-    // TODO possibly look into converting this into the nicer system?
     public static Capability<PlayerRPData> PLAYER_RP_DATA = CapabilityManager.get(new CapabilityToken<PlayerRPData>() { });
 
     private PlayerRPData rpData = null;

@@ -1,0 +1,23 @@
+{
+  "gui.rpplayerinfo.rp_info_screen": "Mеню за информация по ролева игра ",
+  "gui.rpplayerinfo.rp_info_screen.button.gender_button.male": "Мъж",
+  "gui.rpplayerinfo.rp_info_screen.button.gender_button.female": "Жена",
+  "gui.rpplayerinfo.rp_info_screen.button.gender_button.neuter": "Никакъв",
+  "gui.rpplayerinfo.rp_info_screen.button.permission_button.no": "Не",
+  "gui.rpplayerinfo.rp_info_screen.button.permission_button.ask": "Питай",
+  "gui.rpplayerinfo.rp_info_screen.button.permission_button.yes": "Да",
+  "gui.rpplayerinfo.rp_info_screen.button.close": "Затвори",
+  "gui.rpplayerinfo.rp_info_screen.button.view": "Виш описание",
+  "gui.rpplayerinfo.rp_info_screen.string.title": "'с Информация за ролева игра",
+  "gui.rpplayerinfo.rp_info_screen.string.name": "Име:",
+  "gui.rpplayerinfo.rp_info_screen.string.height": "Височина:",
+  "gui.rpplayerinfo.rp_info_screen.string.desc": "Описание:",
+  "gui.rpplayerinfo.rp_info_screen.string.desc.title": "'с Описание",
+  "gui.rpplayerinfo.rp_info_screen.string.age": "Старост:",
+  "gui.rpplayerinfo.rp_info_screen.string.gender": "Пол:",
+  "gui.rpplayerinfo.rp_info_screen.string.race": "Раса:",
+  "gui.rpplayerinfo.rp_info_screen.string.ptm": "Разрешение за осакатяване:",
+  "gui.rpplayerinfo.rp_info_screen.string.ptm.short": "Осакатяване:",
+  "gui.rpplayerinfo.rp_info_screen.string.ptk": "Разрешение за убийство:",
+  "gui.rpplayerinfo.rp_info_screen.string.ptk.short": "Убийство:"
+}

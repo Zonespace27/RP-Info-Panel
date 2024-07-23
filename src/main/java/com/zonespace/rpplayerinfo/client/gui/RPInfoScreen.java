@@ -382,6 +382,7 @@ public class RPInfoScreen extends Screen {
                 font.draw(graphics, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.desc").getVisualOrderText(), this.leftPos + 5, this.topPos + 177, 0x404040);
             }
             renderPlayer(leftPos + 180, topPos + 78, 32, (float)(leftPos + 180) - mouseX, (float)(topPos + 78 - 50) - mouseY, targetPlayer);
+       
         } else {
             font.draw(graphics, Component.literal(ClientPlayerRPData.getName() + Component.translatable("gui.rpplayerinfo.rp_info_screen.string.desc.title").getString()), this.leftPos + 8, this.topPos + 6, 0x2e2d2d);
             if(!isOwner) {
@@ -390,8 +391,6 @@ public class RPInfoScreen extends Screen {
                     font.draw(graphics, Component.literal(text.getString()), this.leftPos + 6, this.topPos + 24 + n, 0x404040);
                     n += 8;
                 }
-
-                //font.draw(graphics, Component.literal(ClientPlayerRPData.getDescription()), this.leftPos + 6, this.topPos + 30, 0x404040);
             }
         }
 

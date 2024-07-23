@@ -51,41 +51,18 @@ public class KeybindHandler {
 		if (player == null || mc.hitResult == null) {
 			return;
 		}
+		
         HitResult rayTrace = mc.hitResult;
         if(rayTrace.getType() != HitResult.Type.ENTITY) {
 			DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientHooks.openRPInfoScreen(player, true));
 			return;
         }
+
         EntityHitResult entityRayTraceResult = (EntityHitResult) rayTrace;
         if(!(entityRayTraceResult.getEntity() instanceof Player playerTarget)) {
             return;
         }
-            
-        //playerTarget.giveExperienceLevels(10); // replace later
+    
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientHooks.openRPInfoScreen(playerTarget, false));
     }
-
-    /*
-    	private static void sendToolSwapMessage() {
-		Minecraft mc = Minecraft.getInstance();
-		LocalPlayer player = mc.player;
-		if (player == null || mc.hitResult == null) {
-			return;
-		}
-		if (player.getMainHandItem().getItem() instanceof BackpackItem) {
-			player.displayClientMessage(Component.translatable("gui.sophisticatedbackpacks.status.unable_to_swap_tool_for_backpack"), true);
-			return;
-		}
-		HitResult rayTrace = mc.hitResult;
-		if (rayTrace.getType() == HitResult.Type.BLOCK) {
-			BlockHitResult blockRayTraceResult = (BlockHitResult) rayTrace;
-			BlockPos pos = blockRayTraceResult.getBlockPos();
-			SBPPacketHandler.INSTANCE.sendToServer(new BlockToolSwapMessage(pos));
-		} else if (rayTrace.getType() == HitResult.Type.ENTITY) {
-			EntityHitResult entityRayTraceResult = (EntityHitResult) rayTrace;
-			SBPPacketHandler.INSTANCE.sendToServer(new EntityToolSwapMessage(entityRayTraceResult.getEntity().getId()));
-		}
-	}
-    
-    */
 }

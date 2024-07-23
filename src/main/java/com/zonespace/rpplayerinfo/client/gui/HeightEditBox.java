@@ -27,7 +27,7 @@ public class HeightEditBox extends EditBox {
             setSuggestion("", false); // hack to make sure the suggestion disappears when there's even 1 char inputted
         }
         return returnValue;
-        //return super.charTyped(p_94122_, p_94123_);
+
     }
 
     public void setValue(@SuppressWarnings("null") String p_94145_) {
