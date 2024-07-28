@@ -19,6 +19,5 @@
   "gui.rpplayerinfo.rp_info_screen.string.ptm": "Разрешение за осакатяване:",
   "gui.rpplayerinfo.rp_info_screen.string.ptm.short": "Осакатяване:",
   "gui.rpplayerinfo.rp_info_screen.string.ptk": "Разрешение за убийство:",
-  "gui.rpplayerinfo.rp_info_screen.string.ptk.short": "Убийство:",
-  "key.rpplayerinfo.open_rp_menu": "Отворете панел за информация по ролева игра"
+  "gui.rpplayerinfo.rp_info_screen.string.ptk.short": "Убийство:"
 }

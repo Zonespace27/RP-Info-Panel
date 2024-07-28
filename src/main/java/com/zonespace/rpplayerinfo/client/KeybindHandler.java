@@ -23,10 +23,10 @@ import net.minecraftforge.fml.DistExecutor;
 public class KeybindHandler {
     private KeybindHandler() {}
 
-    public static final int KEY_APOSTROPHE = 39;
+    public static final int KEY_RBRACKET = 93;
 
     public static final KeyMapping OPEN_RP_MENU_KEYBIND = new KeyMapping("key." + RPPlayerInfo.MODID + ".open_rp_menu",
-		KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM.getOrCreate(KEY_APOSTROPHE), "key.categories.misc");
+		KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM.getOrCreate(KEY_RBRACKET), "key.categories.misc");
 
     public static void registerKeyMappings(RegisterKeyMappingsEvent event) {
 		event.register(OPEN_RP_MENU_KEYBIND);

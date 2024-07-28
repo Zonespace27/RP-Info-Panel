@@ -19,6 +19,5 @@
   "gui.rpplayerinfo.rp_info_screen.string.ptm": "Permiso de Mutilar",
   "gui.rpplayerinfo.rp_info_screen.string.ptm.short": "Mutilar:",
   "gui.rpplayerinfo.rp_info_screen.string.ptk": "Permiso de Matar:",
-  "gui.rpplayerinfo.rp_info_screen.string.ptk.short": "Matar:",
-  "key.rpplayerinfo.open_rp_menu": "Abierto menú de información de RP"
+  "gui.rpplayerinfo.rp_info_screen.string.ptk.short": "Matar:"
 }
