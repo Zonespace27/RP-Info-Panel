@@ -8,11 +8,10 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.CapabilityToken;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
 
-public class PlayerRPDataProvider implements ICapabilityProvider, INBTSerializable<CompoundTag> {
+public class PlayerRPDataProvider implements ICapabilitySerializable<CompoundTag> {
     public static Capability<PlayerRPData> PLAYER_RP_DATA = CapabilityManager.get(new CapabilityToken<PlayerRPData>() { });
 
     private PlayerRPData rpData = null;
