@@ -48,8 +48,21 @@ public class RPPlayerInfo
         }
     }
 
-    @Mod.EventBusSubscriber(modid = RPPlayerInfo.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+    @Mod.EventBusSubscriber(modid = RPPlayerInfo.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.DEDICATED_SERVER)
     public static class CommonModEvents {
+
+        @SubscribeEvent
+        public static void commonSetup(final FMLCommonSetupEvent event)
+        {
+            event.enqueueWork(() -> {
+                ModMessages.register();
+            });
+        }
+
+    }
+
+    @Mod.EventBusSubscriber(modid = RPPlayerInfo.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+    public static class CommonModEvents2 {
 
         @SubscribeEvent
         public static void commonSetup(final FMLCommonSetupEvent event)

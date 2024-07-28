@@ -7,13 +7,9 @@ import com.zonespace.rpplayerinfo.api.GenderStringConverter;
 import com.zonespace.rpplayerinfo.api.PermissionStringConverter;
 import com.zonespace.rpplayerinfo.data.EPlayerGender;
 import com.zonespace.rpplayerinfo.data.EPlayerPermission;
-import com.zonespace.rpplayerinfo.data.PlayerRPData;
-import com.zonespace.rpplayerinfo.data.PlayerRPDataProvider;
+import com.zonespace.rpplayerinfo.networking.RPDataClientSetter;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkEvent;
 
 public class PlayerToPlayerSyncS2CPacket {
@@ -71,27 +67,17 @@ public class PlayerToPlayerSyncS2CPacket {
         NetworkEvent.Context context = supplier.get();
         context.enqueueWork(() -> {
             // on the client
-            @SuppressWarnings("resource") // this is allegedly not an issue so we suppress it
-            Level level = Minecraft.getInstance().level;
-            if(level == null) {
-                return;
-            }
-
-            Player targetPlayer = level.getPlayerByUUID(playerUUID);
-            if(targetPlayer == null) {
-                return;
-            }
-
-            PlayerRPData rpData = targetPlayer.getCapability(PlayerRPDataProvider.PLAYER_RP_DATA).resolve().get();
-
-            rpData.setPermissionToKill(permissionToKill);
-            rpData.setPermissionToMaim(permissionToMaim);
-            rpData.setGender(gender);
-            rpData.setHeightInches(heightInches);
-            rpData.setHeightFeet(heightFeet);
-            rpData.setDescription(description);
-            rpData.setName(name);
-            rpData.setRace(race);
+            RPDataClientSetter.setRPData(
+                permissionToKill, 
+                permissionToMaim, 
+                gender, 
+                heightInches, 
+                heightFeet, 
+                description, 
+                name, 
+                race, 
+                playerUUID
+            );
         });
         return true;
     }

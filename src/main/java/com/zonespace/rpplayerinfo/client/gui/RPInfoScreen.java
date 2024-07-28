@@ -372,7 +372,7 @@ public class RPInfoScreen extends Screen {
             } else {
                 font.draw(graphics, Component.literal(rpData.getName() + Component.translatable("gui.rpplayerinfo.rp_info_screen.string.desc.title").getString()), this.leftPos + 8, this.topPos + 6, 0x2e2d2d);
                 int n = 0;
-                for(FormattedText text : splitDescriptionString()) {
+                for(FormattedText text : splitDescriptionString(rpData)) {
                     font.draw(graphics, Component.literal(text.getString()), this.leftPos + 6, this.topPos + 24 + n, 0x404040);
                     n += 8;
                 }           
@@ -425,8 +425,8 @@ public class RPInfoScreen extends Screen {
         }
     }
 
-    private List<FormattedText> splitDescriptionString() {
-        return font.getSplitter().splitLines(ClientPlayerRPData.getDescription(), 208, Style.EMPTY);
+    private List<FormattedText> splitDescriptionString(PlayerRPData rpData) {
+        return font.getSplitter().splitLines(rpData.getDescription(), 208, Style.EMPTY);
     }
 
     public static void renderPlayer(int p_98851_, int p_98852_, int p_98853_, float p_98854_, float p_98855_, LivingEntity p_98856_) {
