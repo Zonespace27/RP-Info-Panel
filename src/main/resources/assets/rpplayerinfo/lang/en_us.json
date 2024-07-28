@@ -19,5 +19,6 @@
   "gui.rpplayerinfo.rp_info_screen.string.ptm": "Permission To Maim:",
   "gui.rpplayerinfo.rp_info_screen.string.ptm.short": "Maim:",
   "gui.rpplayerinfo.rp_info_screen.string.ptk": "Permission To Kill:",
-  "gui.rpplayerinfo.rp_info_screen.string.ptk.short": "Kill:"
+  "gui.rpplayerinfo.rp_info_screen.string.ptk.short": "Kill:",
+  "key.rpplayerinfo.open_rp_menu": "Open RP Info Panel"
 }
