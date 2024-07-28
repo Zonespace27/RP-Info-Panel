@@ -5,6 +5,7 @@ import org.lwjgl.system.windows.MSG;
 import com.zonespace.rpplayerinfo.RPPlayerInfo;
 import com.zonespace.rpplayerinfo.networking.packet.PlayerDataSyncC2SPacket;
 import com.zonespace.rpplayerinfo.networking.packet.PlayerDataSyncS2CPacket;
+import com.zonespace.rpplayerinfo.networking.packet.PlayerToPlayerSyncS2CPacket;
 import com.zonespace.rpplayerinfo.networking.packet.RoundRobinSyncC2SPacket;
 
 import net.minecraft.resources.ResourceLocation;
@@ -37,6 +38,12 @@ public class ModMessages {
             .consumerMainThread(PlayerDataSyncS2CPacket::handle)
             .add();
 
+        net.messageBuilder(PlayerToPlayerSyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+            .decoder(PlayerToPlayerSyncS2CPacket::new)
+            .encoder(PlayerToPlayerSyncS2CPacket::toBytes)
+            .consumerMainThread(PlayerToPlayerSyncS2CPacket::handle)
+            .add();
+
         net.messageBuilder(PlayerDataSyncC2SPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
             .decoder(PlayerDataSyncC2SPacket::new)
             .encoder(PlayerDataSyncC2SPacket::toBytes)
@@ -50,9 +57,8 @@ public class ModMessages {
             .add();
     }
 
-    @SuppressWarnings("hiding")
-    public static <MSG> void sendToServer(MSG message) {
-        INSTANCE.sendToServer(message);
+    public static void sendToServer(Object message) {
+        INSTANCE.send(PacketDistributor.SERVER.noArg(), message);
     }
 
     @SuppressWarnings("hiding")

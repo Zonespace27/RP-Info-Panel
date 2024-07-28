@@ -1,9 +1,5 @@
 package com.zonespace.rpplayerinfo.networking.packet;
 
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkEvent;
-
 import java.util.UUID;
 import java.util.function.Supplier;
 
@@ -11,10 +7,16 @@ import com.zonespace.rpplayerinfo.api.GenderStringConverter;
 import com.zonespace.rpplayerinfo.api.PermissionStringConverter;
 import com.zonespace.rpplayerinfo.data.EPlayerGender;
 import com.zonespace.rpplayerinfo.data.EPlayerPermission;
+import com.zonespace.rpplayerinfo.data.PlayerRPData;
 import com.zonespace.rpplayerinfo.data.PlayerRPDataProvider;
-import com.zonespace.rpplayerinfo.networking.ModMessages;
 
-public class PlayerDataSyncC2SPacket {
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.network.NetworkEvent;
+
+public class PlayerToPlayerSyncS2CPacket {
     private final EPlayerPermission permissionToKill;
     private final EPlayerPermission permissionToMaim;
     private final EPlayerGender gender;
@@ -24,7 +26,9 @@ public class PlayerDataSyncC2SPacket {
     private final String name;
     private final String race;
 
-    public PlayerDataSyncC2SPacket(EPlayerPermission permissionToKill, EPlayerPermission permissionToMaim, EPlayerGender gender, int heightInches, int heightFeet, String description, String name, String race) {
+    private final UUID playerUUID;
+
+    public PlayerToPlayerSyncS2CPacket(EPlayerPermission permissionToKill, EPlayerPermission permissionToMaim, EPlayerGender gender, int heightInches, int heightFeet, String description, String name, String race, UUID playerUUID) {
         this.permissionToKill = permissionToKill;
         this.permissionToMaim = permissionToMaim;
         this.gender = gender;
@@ -33,9 +37,11 @@ public class PlayerDataSyncC2SPacket {
         this.description = description;
         this.name = name;
         this.race = race;
+
+        this.playerUUID = playerUUID;
     }
 
-    public PlayerDataSyncC2SPacket(FriendlyByteBuf buf) {
+    public PlayerToPlayerSyncS2CPacket(FriendlyByteBuf buf) {
         permissionToKill = PermissionStringConverter.stringToPermissionEnum(buf.readUtf());
         permissionToMaim = PermissionStringConverter.stringToPermissionEnum(buf.readUtf());
         gender = GenderStringConverter.stringToGenderEnum(buf.readUtf());
@@ -44,6 +50,8 @@ public class PlayerDataSyncC2SPacket {
         race = buf.readUtf();
         heightInches = buf.readInt();
         heightFeet = buf.readInt();
+
+        playerUUID = buf.readUUID();
     }
 
     public void toBytes(FriendlyByteBuf buf) {
@@ -55,40 +63,35 @@ public class PlayerDataSyncC2SPacket {
         buf.writeUtf(race);
         buf.writeInt(heightInches);
         buf.writeInt(heightFeet);
+
+        buf.writeUUID(playerUUID);
     }
 
     public boolean handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context context = supplier.get();
         context.enqueueWork(() -> {
-            // on the server
-            ServerPlayer player = context.getSender();
-
-            player.getCapability(PlayerRPDataProvider.PLAYER_RP_DATA).ifPresent(rpData -> {
-                rpData.setPermissionToKill(permissionToKill);
-                rpData.setPermissionToMaim(permissionToMaim);
-                rpData.setGender(gender);
-                rpData.setHeightInches(heightInches);
-                rpData.setHeightFeet(heightFeet);
-                rpData.setDescription(description);
-                rpData.setName(name);
-                rpData.setRace(race);
-            });
-
-            UUID playerUUID = player.getUUID();
-
-            for(ServerPlayer serverPlayer : player.getLevel().getServer().getPlayerList().getPlayers()) {
-                ModMessages.sendToPlayer(new PlayerToPlayerSyncS2CPacket(
-                    permissionToKill, 
-                    permissionToMaim, 
-                    gender, 
-                    heightInches, 
-                    heightFeet, 
-                    description, 
-                    name, 
-                    race, 
-                    playerUUID
-                ), serverPlayer);
+            // on the client
+            @SuppressWarnings("resource") // this is allegedly not an issue so we suppress it
+            Level level = Minecraft.getInstance().level;
+            if(level == null) {
+                return;
             }
+
+            Player targetPlayer = level.getPlayerByUUID(playerUUID);
+            if(targetPlayer == null) {
+                return;
+            }
+
+            PlayerRPData rpData = targetPlayer.getCapability(PlayerRPDataProvider.PLAYER_RP_DATA).resolve().get();
+
+            rpData.setPermissionToKill(permissionToKill);
+            rpData.setPermissionToMaim(permissionToMaim);
+            rpData.setGender(gender);
+            rpData.setHeightInches(heightInches);
+            rpData.setHeightFeet(heightFeet);
+            rpData.setDescription(description);
+            rpData.setName(name);
+            rpData.setRace(race);
         });
         return true;
     }

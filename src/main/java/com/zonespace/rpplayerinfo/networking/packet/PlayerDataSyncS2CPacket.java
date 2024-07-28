@@ -36,22 +36,22 @@ public class PlayerDataSyncS2CPacket {
         permissionToKill = PermissionStringConverter.stringToPermissionEnum(buf.readUtf());
         permissionToMaim = PermissionStringConverter.stringToPermissionEnum(buf.readUtf());
         gender = GenderStringConverter.stringToGenderEnum(buf.readUtf());
-        heightInches = buf.readInt();
-        heightFeet = buf.readInt();
         description = buf.readUtf();
         name = buf.readUtf();
         race = buf.readUtf();
+        heightInches = buf.readInt();
+        heightFeet = buf.readInt();
     }
 
     public void toBytes(FriendlyByteBuf buf) {
         buf.writeUtf(PermissionStringConverter.permissionEnumToString(permissionToKill));
         buf.writeUtf(PermissionStringConverter.permissionEnumToString(permissionToMaim));
         buf.writeUtf(GenderStringConverter.genderEnumToString(gender));
-        buf.writeInt(heightInches);
-        buf.writeInt(heightFeet);
         buf.writeUtf(description);
         buf.writeUtf(name);
         buf.writeUtf(race);
+        buf.writeInt(heightInches);
+        buf.writeInt(heightFeet);
     }
 
     public boolean handle(Supplier<NetworkEvent.Context> supplier) {

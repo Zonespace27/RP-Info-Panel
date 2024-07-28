@@ -31,22 +31,12 @@ public class RPPlayerInfo
     {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
-        // Register the commonSetup method for modloading
-        modEventBus.addListener(this::commonSetup);
-
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
         
         if (FMLEnvironment.dist == Dist.CLIENT) {
             modEventBus.addListener(KeybindHandler::registerKeyMappings); // not moving this one to ClientModEvents bc of the client check
         }
-    }
-
-    private void commonSetup(final FMLCommonSetupEvent event)
-    {
-        event.enqueueWork(() -> {
-            ModMessages.register();
-        });
     }
 
     @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
@@ -56,6 +46,19 @@ public class RPPlayerInfo
         public static void clientSetup(FMLClientSetupEvent event) {
             KeybindHandler.register();
         }
+    }
+
+    @Mod.EventBusSubscriber(modid = RPPlayerInfo.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+    public static class CommonModEvents {
+
+        @SubscribeEvent
+        public static void commonSetup(final FMLCommonSetupEvent event)
+        {
+            event.enqueueWork(() -> {
+                ModMessages.register();
+            });
+        }
+
     }
 
     @Mod.EventBusSubscriber(modid = MODID)
