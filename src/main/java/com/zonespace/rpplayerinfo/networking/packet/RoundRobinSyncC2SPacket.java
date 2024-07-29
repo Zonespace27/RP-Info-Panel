@@ -6,9 +6,10 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-import com.zonespace.rpplayerinfo.client.ClientPlayerRPData;
 import com.zonespace.rpplayerinfo.data.EPlayerGender;
 import com.zonespace.rpplayerinfo.data.EPlayerPermission;
+import com.zonespace.rpplayerinfo.data.PlayerRPData;
+import com.zonespace.rpplayerinfo.data.PlayerRPDataProvider;
 import com.zonespace.rpplayerinfo.networking.ModMessages;
 
 public class RoundRobinSyncC2SPacket {
@@ -25,14 +26,16 @@ public class RoundRobinSyncC2SPacket {
             // on the server
             ServerPlayer player = context.getSender();
 
-            EPlayerPermission permissionToKill = ClientPlayerRPData.getPermissionToKill();
-            EPlayerPermission permissionToMaim = ClientPlayerRPData.getPermissionToMaim();
-            EPlayerGender gender = ClientPlayerRPData.getGender();
-            int heightInches = ClientPlayerRPData.getHeightInches();
-            int heightFeet = ClientPlayerRPData.getHeightFeet();
-            String description = ClientPlayerRPData.getDescription();
-            String name = ClientPlayerRPData.getName();
-            String race = ClientPlayerRPData.getRace();
+            PlayerRPData rpData = player.getCapability(PlayerRPDataProvider.PLAYER_RP_DATA).resolve().get();
+
+            EPlayerPermission permissionToKill = rpData.getPermissionToKill();
+            EPlayerPermission permissionToMaim = rpData.getPermissionToMaim();
+            EPlayerGender gender = rpData.getGender();
+            int heightInches = rpData.getHeightInches();
+            int heightFeet = rpData.getHeightFeet();
+            String description = rpData.getDescription();
+            String name = rpData.getName();
+            String race = rpData.getRace();
             ModMessages.sendToPlayer(new PlayerDataSyncS2CPacket(permissionToKill, permissionToMaim, gender, heightInches, heightFeet, description, name, race), player);
         });
         return true;
