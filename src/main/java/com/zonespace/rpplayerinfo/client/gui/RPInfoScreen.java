@@ -120,7 +120,7 @@ public class RPInfoScreen extends Screen {
         
         descriptionCloseButton = addRenderableWidget(new Button(
             leftPos + 180,
-            topPos + 199,
+            topPos + 174,
             34,
             20,
             Component.translatable("gui.rpplayerinfo.rp_info_screen.button.close"),
@@ -204,7 +204,7 @@ public class RPInfoScreen extends Screen {
                 100, 
                 20, 
                 Component.literal(ClientPlayerRPData.getDescription())));
-            descriptionEditBox.setMaxLength(800);
+            descriptionEditBox.setMaxLength(700);
             descriptionEditBox.setValue(ClientPlayerRPData.getDescription());
         } else {
             descriptionViewButton = addRenderableWidget(new Button(
@@ -326,19 +326,19 @@ public class RPInfoScreen extends Screen {
             if(isOwner) {
                 font.draw(graphics, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.name").getVisualOrderText(), this.leftPos + 5, this.topPos + 25, 0x404040);
             } else {
-                font.draw(graphics, Component.literal(rpData.getName()).withStyle(ChatFormatting.BOLD), this.leftPos + 10, this.topPos + 25, 0x404040);
+                font.draw(graphics, Component.literal(rpData.getName()).withStyle(ChatFormatting.BOLD), this.leftPos + 10, this.topPos + 35, 0x404040);
             }
             
             if(isOwner) {
                 font.draw(graphics, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.race").getVisualOrderText(), this.leftPos + 5, this.topPos + 50, 0x404040);
             } else {
-                font.draw(graphics, Component.literal(rpData.getRace()).withStyle(ChatFormatting.BOLD), this.leftPos + 10, this.topPos + 50, 0x404040);
+                font.draw(graphics, Component.literal(rpData.getRace()).withStyle(ChatFormatting.BOLD), this.leftPos + 10, this.topPos + 60, 0x404040);
             }
 
             if(isOwner) {
                 font.draw(graphics, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.gender").getVisualOrderText(), this.leftPos + 5, this.topPos + 75, 0x404040);
             } else {
-                font.draw(graphics, Component.literal(convertGenderEnumToButton(rpData.getGender()).getString() + "  " + String.valueOf(rpData.getHeightFeet()) + "'" + String.valueOf(rpData.getHeightInches()) + "\"").withStyle(ChatFormatting.BOLD), this.leftPos + 10, this.topPos + 75, 0x404040);
+                font.draw(graphics, Component.literal(convertGenderEnumToButton(rpData.getGender()).getString() + "  " + String.valueOf(rpData.getHeightFeet()) + "'" + String.valueOf(rpData.getHeightInches()) + "\"").withStyle(ChatFormatting.BOLD), this.leftPos + 10, this.topPos + 85, 0x404040);
             }
         
             if(isOwner) {
@@ -355,16 +355,16 @@ public class RPInfoScreen extends Screen {
                 font.draw(graphics, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.ptk").getVisualOrderText(), this.leftPos + 5, this.topPos + 150, 0x404040); //0xFF0000
             }
             if(!isOwner) {
-                font.draw(graphics, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.ptm.short"), this.leftPos + 155, this.topPos + 90, 0x404040);
+                font.draw(graphics, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.ptm.short"), this.leftPos + 155, this.topPos + 95, 0x404040);
                 font.draw(graphics, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.ptk.short"), this.leftPos + 155, this.topPos + 115, 0x404040); //0xFF0000
-                font.draw(graphics, convertPermissionEnumToButton(rpData.getPermissionToMaim()), this.leftPos + 185, this.topPos + 90, 0xbf1313);
+                font.draw(graphics, convertPermissionEnumToButton(rpData.getPermissionToMaim()), this.leftPos + 185, this.topPos + 95, 0xbf1313);
                 font.draw(graphics, convertPermissionEnumToButton(rpData.getPermissionToKill()), this.leftPos + 185, this.topPos + 115, 0xbf1313);
             }
 
             if(isOwner) {
                 font.draw(graphics, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.desc").getVisualOrderText(), this.leftPos + 5, this.topPos + 177, 0x404040);
             }
-            renderPlayer(leftPos + 180, topPos + 78, 32, (float)(leftPos + 180) - mouseX, (float)(topPos + 78 - 50) - mouseY, targetPlayer);
+            renderPlayer(leftPos + 180, topPos + 84, 32, (float)(leftPos + 180) - mouseX, (float)(topPos + 78 - 50) - mouseY, targetPlayer);
        
         } else {
             if(isOwner) {
@@ -481,18 +481,12 @@ public class RPInfoScreen extends Screen {
     }
 
 
+    @SuppressWarnings("null")
     private void recalcImageWidth() {
-        if(isViewingDescription) {
-            imageHeight = 225;
-            imageWidth = 220;
-            return;
-        }
-        if(isOwner) {
-            this.imageWidth = 220;
-            this.imageHeight = 200;
-        } else {
-            this.imageWidth = 220;
-            this.imageHeight = 136;
+        imageWidth = 220;
+        imageHeight = (isOwner || isViewingDescription) ? 200 : 136;
+        if(minecraft != null) {
+            init(minecraft, minecraft.getWindow().getGuiScaledWidth(), minecraft.getWindow().getGuiScaledHeight());
         }
     }
 
@@ -521,9 +515,4 @@ public class RPInfoScreen extends Screen {
         ModMessages.sendToServer(new PlayerDataSyncC2SPacket(ClientPlayerRPData.getPermissionToKill(), ClientPlayerRPData.getPermissionToMaim(), ClientPlayerRPData.getGender(), ClientPlayerRPData.getHeightInches(), ClientPlayerRPData.getHeightFeet(), ClientPlayerRPData.getDescription(), ClientPlayerRPData.getName(), ClientPlayerRPData.getRace()));
     }
 
-
-   /* @Override
-    public boolean isPauseScreen() {
-        return false;
-    }*/
 }

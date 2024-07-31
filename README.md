@@ -1,6 +1,6 @@
 # Roleplay Info Panel
 
-A mod for Minecraft Forge that allows for players to create a roleplay profile for themselves that other people are capable of viewing.
+A mod for Minecraft Forge that allows for players to create a roleplay profile for themselves that other people are capable of viewing. As the name would suggest, this is primarily for roleplay servers.
 
 ## Use
 
@@ -29,5 +29,20 @@ Localized in the following languages:
 - ES-ES
 - ES-MX
 - BG-BG (Credit: Gork)
+- DE-DE (Credit: Cern)
+- IT-IT (Credit: Cern)
 
 If you are interested in localizing this for a language you know, pull requests are always welcome.
+
+## Questions
+
+- Will this be ported to other versions?
+
+  - It's possible. If there's interest, I'll look into porting it to a given version.
+
+- Will this be ported to other modloaders?
+
+  - See above answer.
+
+- Pull requests?
+  - I am always accepting pull requests for fixes, localization, or additions.

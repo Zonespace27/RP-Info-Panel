@@ -1,15 +1,20 @@
 package com.zonespace.rpplayerinfo;
 
 import com.zonespace.rpplayerinfo.client.KeybindHandler;
+import com.zonespace.rpplayerinfo.data.PlayerRPData;
 import com.zonespace.rpplayerinfo.data.PlayerRPDataProvider;
 import com.zonespace.rpplayerinfo.networking.ModMessages;
+import com.zonespace.rpplayerinfo.networking.packet.PlayerDataSyncS2CPacket;
+import com.zonespace.rpplayerinfo.networking.packet.PlayerLoginSyncS2CPacket;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -20,18 +25,15 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 
-// The value here should match an entry in the META-INF/mods.toml file
 @Mod(RPPlayerInfo.MODID)
 public class RPPlayerInfo
 {
-    // Define mod id in a common place for everything to reference
     public static final String MODID = "rpplayerinfo";
 
     public RPPlayerInfo()
     {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
-        // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
         
         if (FMLEnvironment.dist == Dist.CLIENT) {
@@ -48,21 +50,8 @@ public class RPPlayerInfo
         }
     }
 
-    @Mod.EventBusSubscriber(modid = RPPlayerInfo.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.DEDICATED_SERVER)
+    @Mod.EventBusSubscriber(modid = RPPlayerInfo.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class CommonModEvents {
-
-        @SubscribeEvent
-        public static void commonSetup(final FMLCommonSetupEvent event)
-        {
-            event.enqueueWork(() -> {
-                ModMessages.register();
-            });
-        }
-
-    }
-
-    @Mod.EventBusSubscriber(modid = RPPlayerInfo.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
-    public static class CommonModEvents2 {
 
         @SubscribeEvent
         public static void commonSetup(final FMLCommonSetupEvent event)
@@ -103,5 +92,14 @@ public class RPPlayerInfo
         }
     }
 
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public void playerLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        ServerPlayer player = (ServerPlayer)event.getEntity();
+        PlayerRPData rpData = player.getCapability(PlayerRPDataProvider.PLAYER_RP_DATA).resolve().get();
+        ModMessages.sendToPlayer(new PlayerDataSyncS2CPacket(rpData.getPermissionToKill(), rpData.getPermissionToMaim(), rpData.getGender(), rpData.getHeightInches(), rpData.getHeightFeet(), rpData.getDescription(), rpData.getName(), rpData.getRace()), player);
+        for(ServerPlayer serverPlayer : player.getLevel().getServer().getPlayerList().getPlayers()) {
+            ModMessages.sendToPlayer(new PlayerLoginSyncS2CPacket(), serverPlayer);
+        }
+    }
 
 }

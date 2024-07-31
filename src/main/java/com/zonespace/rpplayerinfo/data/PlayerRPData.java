@@ -8,8 +8,10 @@ public class PlayerRPData {
     private EPlayerPermission permissionToKill = EPlayerPermission.PERMISSION_ASK;
     private EPlayerPermission permissionToMaim = EPlayerPermission.PERMISSION_ASK;
     private EPlayerGender gender = EPlayerGender.GENDER_MALE;
+    
     private int heightInches = 8;
     private int heightFeet = 5;
+
     private String description = "Empty description";
     private String name = "John Doe";
     private String race = "Human";

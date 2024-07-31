@@ -5,6 +5,7 @@ import org.lwjgl.system.windows.MSG;
 import com.zonespace.rpplayerinfo.RPPlayerInfo;
 import com.zonespace.rpplayerinfo.networking.packet.PlayerDataSyncC2SPacket;
 import com.zonespace.rpplayerinfo.networking.packet.PlayerDataSyncS2CPacket;
+import com.zonespace.rpplayerinfo.networking.packet.PlayerLoginSyncS2CPacket;
 import com.zonespace.rpplayerinfo.networking.packet.PlayerToPlayerSyncS2CPacket;
 import com.zonespace.rpplayerinfo.networking.packet.RoundRobinSyncC2SPacket;
 
@@ -43,6 +44,13 @@ public class ModMessages {
             .encoder(PlayerToPlayerSyncS2CPacket::toBytes)
             .consumerMainThread(PlayerToPlayerSyncS2CPacket::handle)
             .add();
+
+        net.messageBuilder(PlayerLoginSyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+            .decoder(PlayerLoginSyncS2CPacket::new)
+            .encoder(PlayerLoginSyncS2CPacket::toBytes)
+            .consumerMainThread(PlayerLoginSyncS2CPacket::handle)
+            .add();
+
 
         net.messageBuilder(PlayerDataSyncC2SPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
             .decoder(PlayerDataSyncC2SPacket::new)
