@@ -16,10 +16,10 @@ _The panel's editor GUI._
 ![Editor UI](https://github.com/Zonespace27/RP-Info-Panel/blob/main/src/main/resources/github/info_edit_panel.png?raw=true)
 
 _The GUI for viewing someone else's information._
-![Viewing UI](https://github.com/Zonespace27/RP-Info-Panel/blob/main/src/main/resources/github/info_edit_panel.png?raw=true)
+![Viewing UI](https://github.com/Zonespace27/RP-Info-Panel/blob/main/src/main/resources/github/info_view_panel.png?raw=true)
 
 _The GUI for viewing someone else's description._
-![Description Viewing UI](https://github.com/Zonespace27/RP-Info-Panel/blob/main/src/main/resources/github/info_edit_panel.png?raw=true)
+![Description Viewing UI](https://github.com/Zonespace27/RP-Info-Panel/blob/main/src/main/resources/github/view_desc_panel.png?raw=true)
 
 ## Localization
 
