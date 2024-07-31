@@ -7,7 +7,7 @@ A mod for Minecraft Forge that allows for players to create a roleplay profile f
 To use the mod, follow the following steps:
 
 - Install the mod on both the server and the client.
-- Once in-game, open your info panel with the "Open RP Info Panel" button ("'" by default) and modify what you wish. Exiting the menu will automatically save any changes you made.
+- Once in-game, open your info panel with the "Open RP Info Panel" button (`'` by default) and modify what you wish. Exiting the menu will automatically save any changes you made.
 - To open someone else's panel, simply hit the "Open RP Info Panel" button while looking at their player.
 
 ## Media
