@@ -1,0 +1,30 @@
+name: Bug Report
+description: File a bug report
+labels: ["Bug"]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: Description of the bug
+      description: What went wrong? Give us a 1-2 sentence summary.
+    validations:
+      required: true
+  - type: textarea
+    id: what-should-have-happened
+    attributes:
+      label: What's the difference with what should have happened?
+      description: What's the expected behaviour?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: How do we reproduce this bug?
+      description: Using as much detail as necessary, give us the steps to reproducing this error.
+      value: |
+        1.
+        2.
+        3.
+        ...
+    validations:
+      required: true
