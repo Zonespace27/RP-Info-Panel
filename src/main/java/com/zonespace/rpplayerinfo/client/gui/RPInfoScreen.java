@@ -10,14 +10,12 @@ import net.minecraft.world.level.Level;
 
 import java.util.List;
 
-import javax.annotation.Nonnull;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
 import com.zonespace.rpplayerinfo.RPPlayerInfo;
 import com.zonespace.rpplayerinfo.client.ClientPlayerRPData;
 import com.zonespace.rpplayerinfo.data.EPlayerGender;
@@ -29,11 +27,11 @@ import com.zonespace.rpplayerinfo.networking.packet.PlayerDataSyncC2SPacket;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 
 public class RPInfoScreen extends Screen {
@@ -118,7 +116,7 @@ public class RPInfoScreen extends Screen {
         leftPos = (this.width - imageWidth) / 2;
         topPos = (this.height - imageHeight) / 2;
         
-        descriptionCloseButton = addRenderableWidget(new Button(
+       /*  descriptionCloseButton = addRenderableWidget(new Button(
             leftPos + 180,
             topPos + 174,
             34,
@@ -126,36 +124,48 @@ public class RPInfoScreen extends Screen {
             Component.translatable("gui.rpplayerinfo.rp_info_screen.button.close"),
             this::onDescCloseButtonPress
         ));
+        descriptionCloseButton.visible = false;*/
+        descriptionCloseButton = addRenderableWidget(
+            Button.builder(
+                Component.translatable("gui.rpplayerinfo.rp_info_screen.button.close"), 
+                this::onDescCloseButtonPress
+            )
+            .pos(leftPos + 180, topPos + 174)
+            .size(34, 20)
+            .build()
+        );
         descriptionCloseButton.visible = false;
 
         if(this.isOwner) {
-            permissionToKillButton = addRenderableWidget(new Button(
-                leftPos + 106,
-                topPos + 145,
-                34,
-                20,
-                convertPermissionEnumToButton(ClientPlayerRPData.getPermissionToKill()),
-                this::onPermissionToKillButtonPress
-            ));
+            permissionToKillButton = addRenderableWidget(
+                Button.builder(
+                    convertPermissionEnumToButton(ClientPlayerRPData.getPermissionToKill()),
+                    this::onPermissionToKillButtonPress
+                )
+                .pos(leftPos + 106, topPos + 145)
+                .size(34, 20)
+                .build()
+            );
 
-            permissionToMaimButton = addRenderableWidget(new Button(
-                leftPos + 106,
-                topPos + 120,
-                34,
-                20,
-                convertPermissionEnumToButton(ClientPlayerRPData.getPermissionToMaim()),
-                this::onPermissionToMaimButtonPress
-            ));
+            permissionToKillButton = addRenderableWidget(
+                Button.builder(
+                    convertPermissionEnumToButton(ClientPlayerRPData.getPermissionToMaim()),
+                    this::onPermissionToMaimButtonPress
+                )
+                .pos(leftPos + 106, topPos + 120)
+                .size(34, 20)
+                .build()
+            );
 
-            genderButton = addRenderableWidget(new Button(
-                leftPos + 50,
-                topPos + 70,
-                48,
-                20,
-                convertGenderEnumToButton(ClientPlayerRPData.getGender()),
-                this::onGenderButtonPress
-            ));
-
+            permissionToKillButton = addRenderableWidget(
+                Button.builder(
+                    convertGenderEnumToButton(ClientPlayerRPData.getGender()),
+                    this::onGenderButtonPress
+                )
+                .pos(leftPos + 50, topPos + 70)
+                .size(48, 20)
+                .build()
+            );
 
             nameEditBox = addRenderableWidget(new EditBox(
                 font, 
@@ -207,15 +217,18 @@ public class RPInfoScreen extends Screen {
             descriptionEditBox.setMaxLength(700);
             descriptionEditBox.setValue(ClientPlayerRPData.getDescription());
         } else {
-            descriptionViewButton = addRenderableWidget(new Button(
-                leftPos + 6,
-                topPos + 108,
-                100,
-                20,
-                Component.translatable("gui.rpplayerinfo.rp_info_screen.button.view"),
-                this::onDescOpenButtonPress
-            ));   
+            descriptionViewButton = addRenderableWidget(
+                Button.builder(
+                    Component.translatable("gui.rpplayerinfo.rp_info_screen.button.view"),
+                    this::onDescOpenButtonPress
+                )
+                .pos(leftPos + 6, topPos + 108)
+                .size(100, 20)
+                .build()
+            );
         }
+
+
         
     }
 
@@ -303,77 +316,79 @@ public class RPInfoScreen extends Screen {
     }
 
     @Override
-    public void render(@Nonnull PoseStack graphics, int mouseX, int mouseY, float partialTicks) {
+    public void render(@SuppressWarnings("null") GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         renderBackground(graphics);
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         if(isViewingDescription) {
             RenderSystem.setShaderTexture(0, DESC_TEXTURE);
+            graphics.blit(DESC_TEXTURE, leftPos, topPos, 0, 0, imageWidth, imageHeight);
         } else if(isOwner) {
             RenderSystem.setShaderTexture(0, MAIN_SELF_TEXTURE);
+            graphics.blit(MAIN_SELF_TEXTURE, leftPos, topPos, 0, 0, imageWidth, imageHeight);
         } else {
             RenderSystem.setShaderTexture(0, MAIN_OTHER_TEXTURE);
+            graphics.blit(MAIN_OTHER_TEXTURE, leftPos, topPos, 0, 0, imageWidth, imageHeight);
         }
          
-        blit(graphics, leftPos, topPos, 0, 0, imageWidth, imageHeight);
         super.render(graphics, mouseX, mouseY, partialTicks);
 
         PlayerRPData rpData = targetPlayer.getCapability(PlayerRPDataProvider.PLAYER_RP_DATA).resolve().get();
 
         if(!isViewingDescription) {
-            font.draw(graphics, Component.literal(targetPlayer.getName().getString() + Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.title").getString()), this.leftPos + 8, this.topPos + 6, 0x2e2d2d);
+            graphics.drawString(font, Component.literal(targetPlayer.getName().getString() + Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.title").getString()), this.leftPos + 8, this.topPos + 6, 0x2e2d2d, false);
 
             if(isOwner) {
-                font.draw(graphics, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.name").getVisualOrderText(), this.leftPos + 5, this.topPos + 25, 0x404040);
+                graphics.drawString(font, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.name").getVisualOrderText(), this.leftPos + 5, this.topPos + 25, 0x404040, false);
             } else {
-                font.draw(graphics, Component.literal(rpData.getName()).withStyle(ChatFormatting.BOLD), this.leftPos + 10, this.topPos + 35, 0x404040);
+                graphics.drawString(font, Component.literal(rpData.getName()).withStyle(ChatFormatting.BOLD), this.leftPos + 10, this.topPos + 35, 0x404040, false);
             }
             
             if(isOwner) {
-                font.draw(graphics, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.race").getVisualOrderText(), this.leftPos + 5, this.topPos + 50, 0x404040);
+                graphics.drawString(font, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.race").getVisualOrderText(), this.leftPos + 5, this.topPos + 50, 0x404040, false);
             } else {
-                font.draw(graphics, Component.literal(rpData.getRace()).withStyle(ChatFormatting.BOLD), this.leftPos + 10, this.topPos + 60, 0x404040);
+                graphics.drawString(font, Component.literal(rpData.getRace()).withStyle(ChatFormatting.BOLD), this.leftPos + 10, this.topPos + 60, 0x404040, false);
             }
 
             if(isOwner) {
-                font.draw(graphics, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.gender").getVisualOrderText(), this.leftPos + 5, this.topPos + 75, 0x404040);
+                graphics.drawString(font, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.gender").getVisualOrderText(), this.leftPos + 5, this.topPos + 75, 0x404040, false);
             } else {
-                font.draw(graphics, Component.literal(convertGenderEnumToButton(rpData.getGender()).getString() + "  " + String.valueOf(rpData.getHeightFeet()) + "'" + String.valueOf(rpData.getHeightInches()) + "\"").withStyle(ChatFormatting.BOLD), this.leftPos + 10, this.topPos + 85, 0x404040);
+                graphics.drawString(font, Component.literal(convertGenderEnumToButton(rpData.getGender()).getString() + "  " + String.valueOf(rpData.getHeightFeet()) + "'" + String.valueOf(rpData.getHeightInches()) + "\"").withStyle(ChatFormatting.BOLD), this.leftPos + 10, this.topPos + 85, 0x404040, false);
             }
         
             if(isOwner) {
-                font.draw(graphics, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.height").getVisualOrderText(), this.leftPos + 5, this.topPos + 100, 0x404040);
+                graphics.drawString(font, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.height").getVisualOrderText(), this.leftPos + 5, this.topPos + 100, 0x404040, false);
             }
             
             if(isOwner) {
-                font.draw(graphics, "'", this.leftPos + 63, this.topPos + 96, 0x404040);
-                font.draw(graphics, "\"", this.leftPos + 93, this.topPos + 96, 0x404040);
+                graphics.drawString(font, "'", this.leftPos + 63, this.topPos + 96, 0x404040, false);
+                graphics.drawString(font, "\"", this.leftPos + 93, this.topPos + 96, 0x404040, false);
             }
 
             if(isOwner) {
-                font.draw(graphics, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.ptm").getVisualOrderText(), this.leftPos + 5, this.topPos + 125, 0x404040);
-                font.draw(graphics, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.ptk").getVisualOrderText(), this.leftPos + 5, this.topPos + 150, 0x404040); //0xFF0000
+                graphics.drawString(font, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.ptm").getVisualOrderText(), this.leftPos + 5, this.topPos + 125, 0x404040, false);
+                graphics.drawString(font, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.ptk").getVisualOrderText(), this.leftPos + 5, this.topPos + 150, 0x404040, false);
             }
             if(!isOwner) {
-                font.draw(graphics, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.ptm.short"), this.leftPos + 155, this.topPos + 95, 0x404040);
-                font.draw(graphics, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.ptk.short"), this.leftPos + 155, this.topPos + 115, 0x404040); //0xFF0000
-                font.draw(graphics, convertPermissionEnumToButton(rpData.getPermissionToMaim()), this.leftPos + 185, this.topPos + 95, 0xbf1313);
-                font.draw(graphics, convertPermissionEnumToButton(rpData.getPermissionToKill()), this.leftPos + 185, this.topPos + 115, 0xbf1313);
+                graphics.drawString(font, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.ptm.short"), this.leftPos + 155, this.topPos + 95, 0x404040, false);
+                graphics.drawString(font, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.ptk.short"), this.leftPos + 155, this.topPos + 115, 0x404040, false); 
+                graphics.drawString(font, convertPermissionEnumToButton(rpData.getPermissionToMaim()), this.leftPos + 185, this.topPos + 95, 0xbf1313, false);
+                graphics.drawString(font, convertPermissionEnumToButton(rpData.getPermissionToKill()), this.leftPos + 185, this.topPos + 115, 0xbf1313, false);
             }
 
             if(isOwner) {
-                font.draw(graphics, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.desc").getVisualOrderText(), this.leftPos + 5, this.topPos + 177, 0x404040);
+                graphics.drawString(font, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.desc").getVisualOrderText(), this.leftPos + 5, this.topPos + 177, 0x404040, false);
             }
-            renderPlayer(leftPos + 180, topPos + 84, 32, (float)(leftPos + 180) - mouseX, (float)(topPos + 78 - 50) - mouseY, targetPlayer);
+            renderPlayer(graphics, leftPos + 180, topPos + 84, 32, (float)(leftPos + 180) - mouseX, (float)(topPos + 78 - 50) - mouseY, targetPlayer);
        
         } else {
             if(isOwner) {
-                font.draw(graphics, Component.literal(ClientPlayerRPData.getName() + Component.translatable("gui.rpplayerinfo.rp_info_screen.string.desc.title").getString()), this.leftPos + 8, this.topPos + 6, 0x2e2d2d);
+                graphics.drawString(font, Component.literal(ClientPlayerRPData.getName() + Component.translatable("gui.rpplayerinfo.rp_info_screen.string.desc.title").getString()), this.leftPos + 8, this.topPos + 6, 0x2e2d2d, false);
             } else {
-                font.draw(graphics, Component.literal(rpData.getName() + Component.translatable("gui.rpplayerinfo.rp_info_screen.string.desc.title").getString()), this.leftPos + 8, this.topPos + 6, 0x2e2d2d);
+                graphics.drawString(font, Component.literal(rpData.getName() + Component.translatable("gui.rpplayerinfo.rp_info_screen.string.desc.title").getString()), this.leftPos + 8, this.topPos + 6, 0x2e2d2d, false);
                 int n = 0;
                 for(FormattedText text : splitDescriptionString(rpData)) {
-                    font.draw(graphics, Component.literal(text.getString()), this.leftPos + 6, this.topPos + 24 + n, 0x404040);
+                    graphics.drawString(font, Component.literal(text.getString()), this.leftPos + 6, this.topPos + 24 + n, 0x404040, false);
                     n += 8;
                 }           
             }
@@ -429,57 +444,58 @@ public class RPInfoScreen extends Screen {
         return font.getSplitter().splitLines(rpData.getDescription(), 208, Style.EMPTY);
     }
 
-    public static void renderPlayer(int p_98851_, int p_98852_, int p_98853_, float p_98854_, float p_98855_, LivingEntity p_98856_) {
+    public static void renderPlayer(GuiGraphics graphics, int p_98851_, int p_98852_, int p_98853_, float p_98854_, float p_98855_, LivingEntity p_98856_) {
         float f = (float)Math.atan((double)(p_98854_ / 40.0F));
         float f1 = (float)Math.atan((double)(p_98855_ / 40.0F));
-        renderPlayerRaw(p_98851_, p_98852_, p_98853_, f, f1, p_98856_);
+        renderPlayerFollowsAngle(graphics, p_98851_, p_98852_, p_98853_, f, f1, p_98856_);
     }
 
-    @SuppressWarnings("deprecation")
-    public static void renderPlayerRaw(int p_98851_, int p_98852_, int p_98853_, float angleXComponent, float angleYComponent, LivingEntity p_98856_) {
-        PoseStack posestack = RenderSystem.getModelViewStack();
-        posestack.pushPose();
-        posestack.translate((double)p_98851_, (double)p_98852_, 1050.0);
-        posestack.scale(1.0F, 1.0F, -1.0F);
-        RenderSystem.applyModelViewMatrix();
-        PoseStack posestack1 = new PoseStack();
-        posestack1.translate(0.0, 0.0, 1000.0);
-        posestack1.scale((float)p_98853_, (float)p_98853_, (float)p_98853_);
-        Quaternion quaternion = Vector3f.ZP.rotationDegrees(180.0F);
-        Quaternion quaternion1 = Vector3f.XP.rotationDegrees(angleYComponent * 20.0F);
-        quaternion.mul(quaternion1);
-        posestack1.mulPose(quaternion);
-        float f2 = p_98856_.yBodyRot;
-        float f3 = p_98856_.getYRot();
-        float f4 = p_98856_.getXRot();
-        float f5 = p_98856_.yHeadRotO;
-        float f6 = p_98856_.yHeadRot;
-        p_98856_.yBodyRot = 180.0F + angleXComponent * 20.0F;
-        p_98856_.setYRot(180.0F + angleXComponent * 40.0F);
-        p_98856_.setXRot(-angleYComponent * 20.0F);
-        p_98856_.yHeadRot = p_98856_.getYRot();
-        p_98856_.yHeadRotO = p_98856_.getYRot();
+    public static void renderPlayerFollowsAngle(GuiGraphics pGuiGraphics, int pX, int pY, int pScale, float angleXComponent, float angleYComponent, LivingEntity pEntity) {
+        float f = angleXComponent;
+        float f1 = angleYComponent;
+        Quaternionf quaternionf = (new Quaternionf()).rotateZ((float)Math.PI);
+        Quaternionf quaternionf1 = (new Quaternionf()).rotateX(f1 * 20.0F * ((float)Math.PI / 180F));
+        quaternionf.mul(quaternionf1);
+        float f2 = pEntity.yBodyRot;
+        float f3 = pEntity.getYRot();
+        float f4 = pEntity.getXRot();
+        float f5 = pEntity.yHeadRotO;
+        float f6 = pEntity.yHeadRot;
+        pEntity.yBodyRot = 180.0F + f * 20.0F;
+        pEntity.setYRot(180.0F + f * 40.0F);
+        pEntity.setXRot(-f1 * 20.0F);
+        pEntity.yHeadRot = pEntity.getYRot();
+        pEntity.yHeadRotO = pEntity.getYRot();
+        renderPlayer(pGuiGraphics, pX, pY, pScale, quaternionf, quaternionf1, pEntity);
+        pEntity.yBodyRot = f2;
+        pEntity.setYRot(f3);
+        pEntity.setXRot(f4);
+        pEntity.yHeadRotO = f5;
+        pEntity.yHeadRot = f6;
+   }
+
+   @SuppressWarnings("deprecation")
+    public static void renderPlayer(GuiGraphics pGuiGraphics, int pX, int pY, int pScale, Quaternionf pPose, Quaternionf pCameraOrientation, LivingEntity pEntity) {
+        pGuiGraphics.pose().pushPose();
+        pGuiGraphics.pose().translate((double)pX, (double)pY, 50.0D);
+        pGuiGraphics.pose().mulPoseMatrix((new Matrix4f()).scaling((float)pScale, (float)pScale, (float)(-pScale)));
+        pGuiGraphics.pose().mulPose(pPose);
         Lighting.setupForEntityInInventory();
         EntityRenderDispatcher entityrenderdispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
-        quaternion1.conj();
-        entityrenderdispatcher.overrideCameraOrientation(quaternion1);
-        entityrenderdispatcher.setRenderShadow(false);
-        MultiBufferSource.BufferSource multibuffersource$buffersource = Minecraft.getInstance().renderBuffers().bufferSource();
-        RenderSystem.runAsFancy(() -> {
-            entityrenderdispatcher.render(p_98856_, 0.0, 0.0, 0.0, 0.0F, 1.0F, posestack1, multibuffersource$buffersource, 15728880);
-        });
-        multibuffersource$buffersource.endBatch();
-        entityrenderdispatcher.setRenderShadow(true);
-        p_98856_.yBodyRot = f2;
-        p_98856_.setYRot(f3);
-        p_98856_.setXRot(f4);
-        p_98856_.yHeadRotO = f5;
-        p_98856_.yHeadRot = f6;
-        posestack.popPose();
-        RenderSystem.applyModelViewMatrix();
-        Lighting.setupFor3DItems();
-    }
+        if (pCameraOrientation != null) {
+            pCameraOrientation.conjugate();
+            entityrenderdispatcher.overrideCameraOrientation(pCameraOrientation);
+        }
 
+        entityrenderdispatcher.setRenderShadow(false);
+        RenderSystem.runAsFancy(() -> {
+            entityrenderdispatcher.render(pEntity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, pGuiGraphics.pose(), pGuiGraphics.bufferSource(), 15728880);
+        });
+        pGuiGraphics.flush();
+        entityrenderdispatcher.setRenderShadow(true);
+        pGuiGraphics.pose().popPose();
+        Lighting.setupFor3DItems();
+   }
 
     @SuppressWarnings("null")
     private void recalcImageWidth() {

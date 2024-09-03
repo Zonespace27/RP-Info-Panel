@@ -92,12 +92,16 @@ public class RPPlayerInfo
         }
     }
 
+    @SuppressWarnings("null")
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void playerLogin(PlayerEvent.PlayerLoggedInEvent event) {
         ServerPlayer player = (ServerPlayer)event.getEntity();
         PlayerRPData rpData = player.getCapability(PlayerRPDataProvider.PLAYER_RP_DATA).resolve().get();
         ModMessages.sendToPlayer(new PlayerDataSyncS2CPacket(rpData.getPermissionToKill(), rpData.getPermissionToMaim(), rpData.getGender(), rpData.getHeightInches(), rpData.getHeightFeet(), rpData.getDescription(), rpData.getName(), rpData.getRace()), player);
-        for(ServerPlayer serverPlayer : player.getLevel().getServer().getPlayerList().getPlayers()) {
+        if(player.getServer() == null) {
+            return;
+        }
+        for(ServerPlayer serverPlayer : player.getServer().getPlayerList().getPlayers()) {
             ModMessages.sendToPlayer(new PlayerLoginSyncS2CPacket(), serverPlayer);
         }
     }

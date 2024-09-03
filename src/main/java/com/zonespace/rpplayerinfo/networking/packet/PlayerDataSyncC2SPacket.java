@@ -57,6 +57,7 @@ public class PlayerDataSyncC2SPacket {
         buf.writeInt(heightFeet);
     }
 
+    @SuppressWarnings("null")
     public boolean handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context context = supplier.get();
         context.enqueueWork(() -> {
@@ -75,8 +76,11 @@ public class PlayerDataSyncC2SPacket {
             });
 
             UUID playerUUID = player.getUUID();
-
-            for(ServerPlayer serverPlayer : player.getLevel().getServer().getPlayerList().getPlayers()) {
+            if(player.getServer() == null) {
+                return;
+            }
+            
+            for(ServerPlayer serverPlayer : player.getServer().getPlayerList().getPlayers()) {
                 ModMessages.sendToPlayer(new PlayerToPlayerSyncS2CPacket(
                     permissionToKill, 
                     permissionToMaim, 
