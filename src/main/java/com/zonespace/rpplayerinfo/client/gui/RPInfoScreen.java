@@ -14,9 +14,9 @@ import org.jetbrains.annotations.NotNull;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.zonespace.rpplayerinfo.RPPlayerInfo;
 import com.zonespace.rpplayerinfo.client.ClientPlayerRPData;
+import com.zonespace.rpplayerinfo.client.ClientRPDataCache;
 import com.zonespace.rpplayerinfo.data.EPlayerGender;
 import com.zonespace.rpplayerinfo.data.EPlayerPermission;
-import com.zonespace.rpplayerinfo.data.ModAttachments;
 import com.zonespace.rpplayerinfo.data.PlayerRPData;
 import com.zonespace.rpplayerinfo.networking.ModMessages;
 import com.zonespace.rpplayerinfo.networking.packet.PlayerDataSyncC2SPacket;
@@ -289,7 +289,7 @@ public class RPInfoScreen extends Screen {
         // renders the background (including our panel texture) and all widgets
         super.render(graphics, mouseX, mouseY, partialTicks);
 
-        PlayerRPData rpData = targetPlayer.getData(ModAttachments.PLAYER_RP_DATA);
+        PlayerRPData rpData = ClientRPDataCache.get(targetPlayer.getUUID());
 
         if(!isViewingDescription) {
             graphics.drawString(font, Component.literal(targetPlayer.getName().getString() + Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.title").getString()), this.leftPos + 8, this.topPos + 6, 0x2e2d2d, false);

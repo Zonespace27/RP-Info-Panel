@@ -6,6 +6,7 @@ import com.zonespace.rpplayerinfo.data.PlayerRPData;
 import com.zonespace.rpplayerinfo.networking.ModMessages;
 import com.zonespace.rpplayerinfo.networking.packet.PlayerDataSyncS2CPacket;
 import com.zonespace.rpplayerinfo.networking.packet.PlayerLoginSyncS2CPacket;
+import com.zonespace.rpplayerinfo.networking.packet.PlayerToPlayerSyncS2CPacket;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.api.distmarker.Dist;
@@ -42,6 +43,8 @@ public class RPPlayerInfo
         @SubscribeEvent
         public static void clientSetup(FMLClientSetupEvent event) {
             KeybindHandler.register();
+            NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent.LoggingOut e) ->
+                com.zonespace.rpplayerinfo.client.ClientRPDataCache.clear());
         }
     }
 
@@ -76,8 +79,18 @@ public class RPPlayerInfo
         }
         PlayerRPData rpData = player.getData(ModAttachments.PLAYER_RP_DATA);
         ModMessages.sendToPlayer(new PlayerDataSyncS2CPacket(rpData.getPermissionToKill(), rpData.getPermissionToMaim(), rpData.getGender(), rpData.getHeightInches(), rpData.getHeightFeet(), rpData.getDescription(), rpData.getName(), rpData.getRace()), player);
+        // The server's stored data is authoritative: push the new player's data to
+        // everyone, and every existing player's data to the new player, directly.
         for(ServerPlayer serverPlayer : player.getServer().getPlayerList().getPlayers()) {
-            ModMessages.sendToPlayer(new PlayerLoginSyncS2CPacket(), serverPlayer);
+            ModMessages.sendToPlayer(makeP2PPacket(serverPlayer), player);
+            if(serverPlayer != player) {
+                ModMessages.sendToPlayer(makeP2PPacket(player), serverPlayer);
+            }
         }
+    }
+
+    private static PlayerToPlayerSyncS2CPacket makeP2PPacket(ServerPlayer player) {
+        PlayerRPData rpData = player.getData(ModAttachments.PLAYER_RP_DATA);
+        return new PlayerToPlayerSyncS2CPacket(rpData.getPermissionToKill(), rpData.getPermissionToMaim(), rpData.getGender(), rpData.getHeightInches(), rpData.getHeightFeet(), rpData.getDescription(), rpData.getName(), rpData.getRace(), player.getUUID());
     }
 }
