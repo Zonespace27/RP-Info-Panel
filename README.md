@@ -1,6 +1,6 @@
 # Roleplay Info Panel
 
-A mod for Minecraft Forge that allows for players to create a roleplay profile for themselves that other people are capable of viewing. As the name would suggest, this is primarily for roleplay servers.
+A mod for NeoForge (Minecraft 1.21.1) that allows for players to create a roleplay profile for themselves that other people are capable of viewing. As the name would suggest, this is primarily for roleplay servers.
 
 ## Use
 

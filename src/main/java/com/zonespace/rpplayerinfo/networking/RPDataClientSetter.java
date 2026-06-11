@@ -4,8 +4,8 @@ import java.util.UUID;
 
 import com.zonespace.rpplayerinfo.data.EPlayerGender;
 import com.zonespace.rpplayerinfo.data.EPlayerPermission;
+import com.zonespace.rpplayerinfo.data.ModAttachments;
 import com.zonespace.rpplayerinfo.data.PlayerRPData;
-import com.zonespace.rpplayerinfo.data.PlayerRPDataProvider;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
@@ -13,7 +13,6 @@ import net.minecraft.world.level.Level;
 
 public class RPDataClientSetter {
     public static void setRPData(EPlayerPermission permissionToKill, EPlayerPermission permissionToMaim, EPlayerGender gender, int heightInches, int heightFeet, String description, String name, String race, UUID playerUUID) {
-        @SuppressWarnings("resource") // this is allegedly not an issue so we suppress it
         Level level = Minecraft.getInstance().level;
         if(level == null) {
             return;
@@ -24,7 +23,7 @@ public class RPDataClientSetter {
             return;
         }
 
-        PlayerRPData rpData = targetPlayer.getCapability(PlayerRPDataProvider.PLAYER_RP_DATA).resolve().get();
+        PlayerRPData rpData = targetPlayer.getData(ModAttachments.PLAYER_RP_DATA);
 
         rpData.setPermissionToKill(permissionToKill);
         rpData.setPermissionToMaim(permissionToMaim);

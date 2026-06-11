@@ -2,7 +2,7 @@ package com.zonespace.rpplayerinfo.client.gui;
 
 import net.minecraft.network.chat.Component;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.EditBox;
@@ -30,9 +30,9 @@ public class HeightEditBox extends EditBox {
 
     }
 
-    public void setValue(@SuppressWarnings("null") String p_94145_) {
+    public void setValue(String p_94145_) {
         super.setValue(p_94145_);
-        if(getValue() == "") {
+        if(getValue().isEmpty()) {
             setSuggestion(storedSuggestion, false);
         } else {
             setSuggestion("", false);
@@ -41,7 +41,7 @@ public class HeightEditBox extends EditBox {
 
     public void deleteChars(int p_94181_) {
         super.deleteChars(p_94181_);
-        if(getValue() == "") {
+        if(getValue().isEmpty()) {
             setSuggestion(storedSuggestion, false);
         }
     }

@@ -1,76 +1,34 @@
 package com.zonespace.rpplayerinfo.networking;
 
-import org.lwjgl.system.windows.MSG;
-
-import com.zonespace.rpplayerinfo.RPPlayerInfo;
 import com.zonespace.rpplayerinfo.networking.packet.PlayerDataSyncC2SPacket;
 import com.zonespace.rpplayerinfo.networking.packet.PlayerDataSyncS2CPacket;
 import com.zonespace.rpplayerinfo.networking.packet.PlayerLoginSyncS2CPacket;
 import com.zonespace.rpplayerinfo.networking.packet.PlayerToPlayerSyncS2CPacket;
 import com.zonespace.rpplayerinfo.networking.packet.RoundRobinSyncC2SPacket;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 public class ModMessages {
-    private static SimpleChannel INSTANCE;
+    public static void register(RegisterPayloadHandlersEvent event) {
+        PayloadRegistrar registrar = event.registrar("1.0").optional();
 
-    private static int packetId = 0;
-    private static int id() {
-        return packetId++;
+        registrar.playToClient(PlayerDataSyncS2CPacket.TYPE, PlayerDataSyncS2CPacket.STREAM_CODEC, PlayerDataSyncS2CPacket::handle);
+        registrar.playToClient(PlayerToPlayerSyncS2CPacket.TYPE, PlayerToPlayerSyncS2CPacket.STREAM_CODEC, PlayerToPlayerSyncS2CPacket::handle);
+        registrar.playToClient(PlayerLoginSyncS2CPacket.TYPE, PlayerLoginSyncS2CPacket.STREAM_CODEC, PlayerLoginSyncS2CPacket::handle);
+
+        registrar.playToServer(PlayerDataSyncC2SPacket.TYPE, PlayerDataSyncC2SPacket.STREAM_CODEC, PlayerDataSyncC2SPacket::handle);
+        registrar.playToServer(RoundRobinSyncC2SPacket.TYPE, RoundRobinSyncC2SPacket.STREAM_CODEC, RoundRobinSyncC2SPacket::handle);
     }
 
-    public static void register() {
-        SimpleChannel net = NetworkRegistry.ChannelBuilder.named(new ResourceLocation(RPPlayerInfo.MODID, "messages"))
-            .networkProtocolVersion(() -> "1.0")
-            .clientAcceptedVersions(s -> true)
-            .serverAcceptedVersions(s -> true)
-            .simpleChannel();
-
-        INSTANCE = net;
-
-        net.messageBuilder(PlayerDataSyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
-            .decoder(PlayerDataSyncS2CPacket::new)
-            .encoder(PlayerDataSyncS2CPacket::toBytes)
-            .consumerMainThread(PlayerDataSyncS2CPacket::handle)
-            .add();
-
-        net.messageBuilder(PlayerToPlayerSyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
-            .decoder(PlayerToPlayerSyncS2CPacket::new)
-            .encoder(PlayerToPlayerSyncS2CPacket::toBytes)
-            .consumerMainThread(PlayerToPlayerSyncS2CPacket::handle)
-            .add();
-
-        net.messageBuilder(PlayerLoginSyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
-            .decoder(PlayerLoginSyncS2CPacket::new)
-            .encoder(PlayerLoginSyncS2CPacket::toBytes)
-            .consumerMainThread(PlayerLoginSyncS2CPacket::handle)
-            .add();
-
-
-        net.messageBuilder(PlayerDataSyncC2SPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
-            .decoder(PlayerDataSyncC2SPacket::new)
-            .encoder(PlayerDataSyncC2SPacket::toBytes)
-            .consumerMainThread(PlayerDataSyncC2SPacket::handle)
-            .add();
-
-        net.messageBuilder(RoundRobinSyncC2SPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
-            .decoder(RoundRobinSyncC2SPacket::new)
-            .encoder(RoundRobinSyncC2SPacket::toBytes)
-            .consumerMainThread(RoundRobinSyncC2SPacket::handle)
-            .add();
+    public static void sendToServer(CustomPacketPayload message) {
+        PacketDistributor.sendToServer(message);
     }
 
-    public static void sendToServer(Object message) {
-        INSTANCE.send(PacketDistributor.SERVER.noArg(), message);
-    }
-
-    @SuppressWarnings("hiding")
-    public static <MSG> void sendToPlayer(MSG message, ServerPlayer player) {
-        INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), message);
+    public static void sendToPlayer(CustomPacketPayload message, ServerPlayer player) {
+        PacketDistributor.sendToPlayer(player, message);
     }
 }

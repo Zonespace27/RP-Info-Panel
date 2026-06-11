@@ -1,44 +1,46 @@
 package com.zonespace.rpplayerinfo.networking.packet;
 
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
-
-import com.zonespace.rpplayerinfo.data.EPlayerGender;
-import com.zonespace.rpplayerinfo.data.EPlayerPermission;
+import com.zonespace.rpplayerinfo.RPPlayerInfo;
+import com.zonespace.rpplayerinfo.data.ModAttachments;
 import com.zonespace.rpplayerinfo.data.PlayerRPData;
-import com.zonespace.rpplayerinfo.data.PlayerRPDataProvider;
-import com.zonespace.rpplayerinfo.networking.ModMessages;
 
-public class RoundRobinSyncC2SPacket {
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-    public RoundRobinSyncC2SPacket() {}
+public record RoundRobinSyncC2SPacket() implements CustomPacketPayload {
+    public static final RoundRobinSyncC2SPacket INSTANCE = new RoundRobinSyncC2SPacket();
 
-    public RoundRobinSyncC2SPacket(FriendlyByteBuf buf) {}
+    public static final CustomPacketPayload.Type<RoundRobinSyncC2SPacket> TYPE =
+        new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(RPPlayerInfo.MODID, "round_robin_sync_c2s"));
 
-    public void toBytes(FriendlyByteBuf buf) {}
+    public static final StreamCodec<FriendlyByteBuf, RoundRobinSyncC2SPacket> STREAM_CODEC = StreamCodec.unit(INSTANCE);
 
-    public boolean handle(Supplier<NetworkEvent.Context> supplier) {
-        NetworkEvent.Context context = supplier.get();
-        context.enqueueWork(() -> {
-            // on the server
-            ServerPlayer player = context.getSender();
-
-            PlayerRPData rpData = player.getCapability(PlayerRPDataProvider.PLAYER_RP_DATA).resolve().get();
-
-            EPlayerPermission permissionToKill = rpData.getPermissionToKill();
-            EPlayerPermission permissionToMaim = rpData.getPermissionToMaim();
-            EPlayerGender gender = rpData.getGender();
-            int heightInches = rpData.getHeightInches();
-            int heightFeet = rpData.getHeightFeet();
-            String description = rpData.getDescription();
-            String name = rpData.getName();
-            String race = rpData.getRace();
-            ModMessages.sendToPlayer(new PlayerDataSyncS2CPacket(permissionToKill, permissionToMaim, gender, heightInches, heightFeet, description, name, race), player);
-        });
-        return true;
+    @Override
+    public CustomPacketPayload.Type<RoundRobinSyncC2SPacket> type() {
+        return TYPE;
     }
 
+    public static void handle(RoundRobinSyncC2SPacket packet, IPayloadContext context) {
+        // on the server: send the player's stored data back down to them
+        if (!(context.player() instanceof ServerPlayer player)) {
+            return;
+        }
+
+        PlayerRPData rpData = player.getData(ModAttachments.PLAYER_RP_DATA);
+
+        context.reply(new PlayerDataSyncS2CPacket(
+            rpData.getPermissionToKill(),
+            rpData.getPermissionToMaim(),
+            rpData.getGender(),
+            rpData.getHeightInches(),
+            rpData.getHeightFeet(),
+            rpData.getDescription(),
+            rpData.getName(),
+            rpData.getRace()
+        ));
+    }
 }

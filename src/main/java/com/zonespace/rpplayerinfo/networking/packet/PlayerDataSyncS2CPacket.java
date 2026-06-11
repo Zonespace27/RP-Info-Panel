@@ -1,46 +1,35 @@
 package com.zonespace.rpplayerinfo.networking.packet;
 
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
-
+import com.zonespace.rpplayerinfo.RPPlayerInfo;
 import com.zonespace.rpplayerinfo.api.GenderStringConverter;
 import com.zonespace.rpplayerinfo.api.PermissionStringConverter;
 import com.zonespace.rpplayerinfo.client.ClientPlayerRPData;
 import com.zonespace.rpplayerinfo.data.EPlayerGender;
 import com.zonespace.rpplayerinfo.data.EPlayerPermission;
 
-public class PlayerDataSyncS2CPacket {
-    private final EPlayerPermission permissionToKill;
-    private final EPlayerPermission permissionToMaim;
-    private final EPlayerGender gender;
-    private final int heightInches;
-    private final int heightFeet;
-    private final String description;
-    private final String name;
-    private final String race;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-    public PlayerDataSyncS2CPacket(EPlayerPermission permissionToKill, EPlayerPermission permissionToMaim, EPlayerGender gender, int heightInches, int heightFeet, String description, String name, String race) {
-        this.permissionToKill = permissionToKill;
-        this.permissionToMaim = permissionToMaim;
-        this.gender = gender;
-        this.heightInches = heightInches;
-        this.heightFeet = heightFeet;
-        this.description = description;
-        this.name = name;
-        this.race = race;
-    }
+public record PlayerDataSyncS2CPacket(EPlayerPermission permissionToKill, EPlayerPermission permissionToMaim, EPlayerGender gender, int heightInches, int heightFeet, String description, String name, String race) implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<PlayerDataSyncS2CPacket> TYPE =
+        new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(RPPlayerInfo.MODID, "player_data_sync_s2c"));
 
-    public PlayerDataSyncS2CPacket(FriendlyByteBuf buf) {
-        permissionToKill = PermissionStringConverter.stringToPermissionEnum(buf.readUtf());
-        permissionToMaim = PermissionStringConverter.stringToPermissionEnum(buf.readUtf());
-        gender = GenderStringConverter.stringToGenderEnum(buf.readUtf());
-        description = buf.readUtf();
-        name = buf.readUtf();
-        race = buf.readUtf();
-        heightInches = buf.readInt();
-        heightFeet = buf.readInt();
+    public static final StreamCodec<FriendlyByteBuf, PlayerDataSyncS2CPacket> STREAM_CODEC =
+        CustomPacketPayload.codec(PlayerDataSyncS2CPacket::toBytes, PlayerDataSyncS2CPacket::fromBytes);
+
+    public static PlayerDataSyncS2CPacket fromBytes(FriendlyByteBuf buf) {
+        EPlayerPermission permissionToKill = PermissionStringConverter.stringToPermissionEnum(buf.readUtf());
+        EPlayerPermission permissionToMaim = PermissionStringConverter.stringToPermissionEnum(buf.readUtf());
+        EPlayerGender gender = GenderStringConverter.stringToGenderEnum(buf.readUtf());
+        String description = buf.readUtf();
+        String name = buf.readUtf();
+        String race = buf.readUtf();
+        int heightInches = buf.readInt();
+        int heightFeet = buf.readInt();
+        return new PlayerDataSyncS2CPacket(permissionToKill, permissionToMaim, gender, heightInches, heightFeet, description, name, race);
     }
 
     public void toBytes(FriendlyByteBuf buf) {
@@ -54,19 +43,20 @@ public class PlayerDataSyncS2CPacket {
         buf.writeInt(heightFeet);
     }
 
-    public boolean handle(Supplier<NetworkEvent.Context> supplier) {
-        NetworkEvent.Context context = supplier.get();
-        context.enqueueWork(() -> {
-            // on the client
-            ClientPlayerRPData.setPermissionToKill(permissionToKill);
-            ClientPlayerRPData.setPermissionToMaim(permissionToMaim);
-            ClientPlayerRPData.setGender(gender);
-            ClientPlayerRPData.setHeightInches(heightInches);
-            ClientPlayerRPData.setHeightFeet(heightFeet);
-            ClientPlayerRPData.setDescription(description);
-            ClientPlayerRPData.setName(name);
-            ClientPlayerRPData.setRace(race);
-        });
-        return true;
+    @Override
+    public CustomPacketPayload.Type<PlayerDataSyncS2CPacket> type() {
+        return TYPE;
+    }
+
+    public static void handle(PlayerDataSyncS2CPacket packet, IPayloadContext context) {
+        // on the client
+        ClientPlayerRPData.setPermissionToKill(packet.permissionToKill());
+        ClientPlayerRPData.setPermissionToMaim(packet.permissionToMaim());
+        ClientPlayerRPData.setGender(packet.gender());
+        ClientPlayerRPData.setHeightInches(packet.heightInches());
+        ClientPlayerRPData.setHeightFeet(packet.heightFeet());
+        ClientPlayerRPData.setDescription(packet.description());
+        ClientPlayerRPData.setName(packet.name());
+        ClientPlayerRPData.setRace(packet.race());
     }
 }

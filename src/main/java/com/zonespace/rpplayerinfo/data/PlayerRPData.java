@@ -2,13 +2,16 @@ package com.zonespace.rpplayerinfo.data;
 
 import com.zonespace.rpplayerinfo.api.GenderStringConverter;
 import com.zonespace.rpplayerinfo.api.PermissionStringConverter;
-import net.minecraft.nbt.CompoundTag;
 
-public class PlayerRPData {
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.neoforged.neoforge.common.util.INBTSerializable;
+
+public class PlayerRPData implements INBTSerializable<CompoundTag> {
     private EPlayerPermission permissionToKill = EPlayerPermission.PERMISSION_ASK;
     private EPlayerPermission permissionToMaim = EPlayerPermission.PERMISSION_ASK;
     private EPlayerGender gender = EPlayerGender.GENDER_MALE;
-    
+
     private int heightInches = 8;
     private int heightFeet = 5;
 
@@ -23,7 +26,7 @@ public class PlayerRPData {
     public EPlayerPermission getPermissionToKill() {
         return permissionToKill;
     }
-    
+
     public void setPermissionToMaim(EPlayerPermission new_ptm) {
         permissionToMaim = new_ptm;
     }
@@ -111,5 +114,17 @@ public class PlayerRPData {
         description = nbt.getString("description");
         name = nbt.getString("name");
         race = nbt.getString("race");
+    }
+
+    @Override
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
+        CompoundTag nbt = new CompoundTag();
+        saveNBTData(nbt);
+        return nbt;
+    }
+
+    @Override
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
+        loadNBTData(nbt);
     }
 }
