@@ -3,11 +3,11 @@ package com.zonespace.rpplayerinfo.data;
 import com.zonespace.rpplayerinfo.api.GenderStringConverter;
 import com.zonespace.rpplayerinfo.api.PermissionStringConverter;
 
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
-import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.common.util.ValueIOSerializable;
 
-public class PlayerRPData implements INBTSerializable<CompoundTag> {
+public class PlayerRPData implements ValueIOSerializable {
     private EPlayerPermission permissionToKill = EPlayerPermission.PERMISSION_ASK;
     private EPlayerPermission permissionToMaim = EPlayerPermission.PERMISSION_ASK;
     private EPlayerGender gender = EPlayerGender.GENDER_MALE;
@@ -94,37 +94,27 @@ public class PlayerRPData implements INBTSerializable<CompoundTag> {
         this.race = source.race;
     }
 
-    public void saveNBTData(CompoundTag nbt) {
-        nbt.putString("permissionToKill", PermissionStringConverter.permissionEnumToString(permissionToKill));
-        nbt.putString("permissionToMaim", PermissionStringConverter.permissionEnumToString(permissionToMaim));
-        nbt.putString("gender", GenderStringConverter.genderEnumToString(gender));
-        nbt.putInt("heightInches", heightInches);
-        nbt.putInt("heightFeet", heightFeet);
-        nbt.putString("description", description);
-        nbt.putString("name", name);
-        nbt.putString("race", race);
-    }
-
-    public void loadNBTData(CompoundTag nbt) {
-        permissionToKill = PermissionStringConverter.stringToPermissionEnum(nbt.getString("permissionToKill"));
-        permissionToMaim = PermissionStringConverter.stringToPermissionEnum(nbt.getString("permissionToMaim"));
-        gender = GenderStringConverter.stringToGenderEnum(nbt.getString("gender"));
-        heightInches = nbt.getInt("heightInches");
-        heightFeet = nbt.getInt("heightFeet");
-        description = nbt.getString("description");
-        name = nbt.getString("name");
-        race = nbt.getString("race");
+    @Override
+    public void serialize(ValueOutput output) {
+        output.putString("permissionToKill", PermissionStringConverter.permissionEnumToString(permissionToKill));
+        output.putString("permissionToMaim", PermissionStringConverter.permissionEnumToString(permissionToMaim));
+        output.putString("gender", GenderStringConverter.genderEnumToString(gender));
+        output.putInt("heightInches", heightInches);
+        output.putInt("heightFeet", heightFeet);
+        output.putString("description", description);
+        output.putString("name", name);
+        output.putString("race", race);
     }
 
     @Override
-    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
-        CompoundTag nbt = new CompoundTag();
-        saveNBTData(nbt);
-        return nbt;
-    }
-
-    @Override
-    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
-        loadNBTData(nbt);
+    public void deserialize(ValueInput input) {
+        permissionToKill = PermissionStringConverter.stringToPermissionEnum(input.getStringOr("permissionToKill", "Ask"));
+        permissionToMaim = PermissionStringConverter.stringToPermissionEnum(input.getStringOr("permissionToMaim", "Ask"));
+        gender = GenderStringConverter.stringToGenderEnum(input.getStringOr("gender", "Male"));
+        heightInches = input.getIntOr("heightInches", 8);
+        heightFeet = input.getIntOr("heightFeet", 5);
+        description = input.getStringOr("description", "Empty description");
+        name = input.getStringOr("name", "John Doe");
+        race = input.getStringOr("race", "Human");
     }
 }

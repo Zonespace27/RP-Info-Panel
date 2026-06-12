@@ -32,7 +32,7 @@ public class RPPlayerInfo
         NeoForge.EVENT_BUS.register(this);
     }
 
-    @EventBusSubscriber(modid = MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+    @EventBusSubscriber(modid = MODID, value = Dist.CLIENT)
     public static class ClientModEvents
     {
         @SubscribeEvent
@@ -48,7 +48,7 @@ public class RPPlayerInfo
         }
     }
 
-    @EventBusSubscriber(modid = RPPlayerInfo.MODID, bus = EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(modid = RPPlayerInfo.MODID)
     public static class CommonModEvents {
 
         @SubscribeEvent
@@ -81,7 +81,7 @@ public class RPPlayerInfo
         ModMessages.sendToPlayer(new PlayerDataSyncS2CPacket(rpData.getPermissionToKill(), rpData.getPermissionToMaim(), rpData.getGender(), rpData.getHeightInches(), rpData.getHeightFeet(), rpData.getDescription(), rpData.getName(), rpData.getRace()), player);
         // The server's stored data is authoritative: push the new player's data to
         // everyone, and every existing player's data to the new player, directly.
-        for(ServerPlayer serverPlayer : player.getServer().getPlayerList().getPlayers()) {
+        for(ServerPlayer serverPlayer : player.level().getServer().getPlayerList().getPlayers()) {
             ModMessages.sendToPlayer(makeP2PPacket(serverPlayer), player);
             if(serverPlayer != player) {
                 ModMessages.sendToPlayer(makeP2PPacket(player), serverPlayer);

@@ -24,10 +24,6 @@ public class ModMessages {
         registrar.playToServer(RoundRobinSyncC2SPacket.TYPE, RoundRobinSyncC2SPacket.STREAM_CODEC, RoundRobinSyncC2SPacket::handle);
     }
 
-    public static void sendToServer(CustomPacketPayload message) {
-        PacketDistributor.sendToServer(message);
-    }
-
     public static void sendToPlayer(CustomPacketPayload message, ServerPlayer player) {
         PacketDistributor.sendToPlayer(player, message);
     }

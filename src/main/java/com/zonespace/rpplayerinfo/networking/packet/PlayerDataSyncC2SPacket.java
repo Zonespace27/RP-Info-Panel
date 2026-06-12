@@ -14,13 +14,13 @@ import com.zonespace.rpplayerinfo.networking.ModMessages;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record PlayerDataSyncC2SPacket(EPlayerPermission permissionToKill, EPlayerPermission permissionToMaim, EPlayerGender gender, int heightInches, int heightFeet, String description, String name, String race) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<PlayerDataSyncC2SPacket> TYPE =
-        new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(RPPlayerInfo.MODID, "player_data_sync_c2s"));
+        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(RPPlayerInfo.MODID, "player_data_sync_c2s"));
 
     public static final StreamCodec<FriendlyByteBuf, PlayerDataSyncC2SPacket> STREAM_CODEC =
         CustomPacketPayload.codec(PlayerDataSyncC2SPacket::toBytes, PlayerDataSyncC2SPacket::fromBytes);
@@ -71,7 +71,7 @@ public record PlayerDataSyncC2SPacket(EPlayerPermission permissionToKill, EPlaye
 
         UUID playerUUID = player.getUUID();
 
-        for (ServerPlayer serverPlayer : player.getServer().getPlayerList().getPlayers()) {
+        for (ServerPlayer serverPlayer : player.level().getServer().getPlayerList().getPlayers()) {
             ModMessages.sendToPlayer(new PlayerToPlayerSyncS2CPacket(
                 packet.permissionToKill(),
                 packet.permissionToMaim(),

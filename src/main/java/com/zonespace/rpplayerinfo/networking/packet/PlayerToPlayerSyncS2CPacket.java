@@ -12,12 +12,12 @@ import com.zonespace.rpplayerinfo.networking.RPDataClientSetter;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record PlayerToPlayerSyncS2CPacket(EPlayerPermission permissionToKill, EPlayerPermission permissionToMaim, EPlayerGender gender, int heightInches, int heightFeet, String description, String name, String race, UUID playerUUID) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<PlayerToPlayerSyncS2CPacket> TYPE =
-        new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(RPPlayerInfo.MODID, "player_to_player_sync_s2c"));
+        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(RPPlayerInfo.MODID, "player_to_player_sync_s2c"));
 
     public static final StreamCodec<FriendlyByteBuf, PlayerToPlayerSyncS2CPacket> STREAM_CODEC =
         CustomPacketPayload.codec(PlayerToPlayerSyncS2CPacket::toBytes, PlayerToPlayerSyncS2CPacket::fromBytes);

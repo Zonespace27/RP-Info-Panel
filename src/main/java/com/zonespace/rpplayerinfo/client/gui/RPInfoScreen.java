@@ -3,7 +3,7 @@ package com.zonespace.rpplayerinfo.client.gui;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
@@ -18,15 +18,18 @@ import com.zonespace.rpplayerinfo.client.ClientRPDataCache;
 import com.zonespace.rpplayerinfo.data.EPlayerGender;
 import com.zonespace.rpplayerinfo.data.EPlayerPermission;
 import com.zonespace.rpplayerinfo.data.PlayerRPData;
-import com.zonespace.rpplayerinfo.networking.ModMessages;
 import com.zonespace.rpplayerinfo.networking.packet.PlayerDataSyncC2SPacket;
 
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 
 public class RPInfoScreen extends Screen {
     private static final Component TITLE = Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen");
@@ -39,9 +42,9 @@ public class RPInfoScreen extends Screen {
     private static final Component GENDER_BUTTON_FEMALE = Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.button.gender_button.female").withStyle(ChatFormatting.BOLD);
     private static final Component GENDER_BUTTON_NEUTER = Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.button.gender_button.neuter").withStyle(ChatFormatting.BOLD);
 
-    private static final ResourceLocation MAIN_SELF_TEXTURE = ResourceLocation.fromNamespaceAndPath(RPPlayerInfo.MODID, "textures/gui/player_menu_self.png");
-    private static final ResourceLocation MAIN_OTHER_TEXTURE = ResourceLocation.fromNamespaceAndPath(RPPlayerInfo.MODID, "textures/gui/player_menu_other.png");
-    private static final ResourceLocation DESC_TEXTURE = ResourceLocation.fromNamespaceAndPath(RPPlayerInfo.MODID, "textures/gui/desc_menu.png");
+    private static final Identifier MAIN_SELF_TEXTURE = Identifier.fromNamespaceAndPath(RPPlayerInfo.MODID, "textures/gui/player_menu_self.png");
+    private static final Identifier MAIN_OTHER_TEXTURE = Identifier.fromNamespaceAndPath(RPPlayerInfo.MODID, "textures/gui/player_menu_other.png");
+    private static final Identifier DESC_TEXTURE = Identifier.fromNamespaceAndPath(RPPlayerInfo.MODID, "textures/gui/desc_menu.png");
 
     private int imageWidth;
     private int imageHeight;
@@ -81,16 +84,16 @@ public class RPInfoScreen extends Screen {
     }
 
     @Override
-    public boolean keyPressed(int p_97765_, int p_97766_, int p_97767_) {
-        InputConstants.Key mouseKey = InputConstants.getKey(p_97765_, p_97766_);
+    public boolean keyPressed(KeyEvent event) {
+        InputConstants.Key mouseKey = InputConstants.getKey(event);
         if (this.minecraft.options.keyInventory.isActiveAndMatches(mouseKey)) {
             if(nameEditBox.isFocused() || descriptionEditBox.isFocused() || raceEditBox.isFocused()) {
-                return super.keyPressed(p_97765_, p_97766_, p_97767_);
+                return super.keyPressed(event);
             }
             this.onClose();
             return true;
         } else {
-            return super.keyPressed(p_97765_, p_97766_, p_97767_);
+            return super.keyPressed(event);
         }
     }
 
@@ -269,10 +272,10 @@ public class RPInfoScreen extends Screen {
     }
 
     @Override
-    public void renderBackground(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        super.renderBackground(graphics, mouseX, mouseY, partialTicks);
+    public void extractBackground(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+        super.extractBackground(graphics, mouseX, mouseY, partialTicks);
 
-        ResourceLocation texture;
+        Identifier texture;
         if(isViewingDescription) {
             texture = DESC_TEXTURE;
         } else if(isOwner) {
@@ -281,71 +284,71 @@ public class RPInfoScreen extends Screen {
             texture = MAIN_OTHER_TEXTURE;
         }
 
-        graphics.blit(texture, leftPos, topPos, 0, 0, imageWidth, imageHeight);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, texture, leftPos, topPos, 0, 0, imageWidth, imageHeight, 256, 256);
     }
 
     @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        // renders the background (including our panel texture) and all widgets
-        super.render(graphics, mouseX, mouseY, partialTicks);
+    public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+        // renders all widgets (the background, including our panel texture, is handled by extractBackground)
+        super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
 
         PlayerRPData rpData = ClientRPDataCache.get(targetPlayer.getUUID());
 
         if(!isViewingDescription) {
-            graphics.drawString(font, Component.literal(targetPlayer.getName().getString() + Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.title").getString()), this.leftPos + 8, this.topPos + 6, 0x2e2d2d, false);
+            graphics.text(font, Component.literal(targetPlayer.getName().getString() + Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.title").getString()), this.leftPos + 8, this.topPos + 6, 0xFF2E2D2D, false);
 
             if(isOwner) {
-                graphics.drawString(font, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.name").getVisualOrderText(), this.leftPos + 5, this.topPos + 25, 0x404040, false);
+                graphics.text(font, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.name").getVisualOrderText(), this.leftPos + 5, this.topPos + 25, 0xFF404040, false);
             } else {
-                graphics.drawString(font, Component.literal(rpData.getName()).withStyle(ChatFormatting.BOLD), this.leftPos + 10, this.topPos + 35, 0x404040, false);
+                graphics.text(font, Component.literal(rpData.getName()).withStyle(ChatFormatting.BOLD), this.leftPos + 10, this.topPos + 35, 0xFF404040, false);
             }
 
             if(isOwner) {
-                graphics.drawString(font, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.race").getVisualOrderText(), this.leftPos + 5, this.topPos + 50, 0x404040, false);
+                graphics.text(font, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.race").getVisualOrderText(), this.leftPos + 5, this.topPos + 50, 0xFF404040, false);
             } else {
-                graphics.drawString(font, Component.literal(rpData.getRace()).withStyle(ChatFormatting.BOLD), this.leftPos + 10, this.topPos + 60, 0x404040, false);
+                graphics.text(font, Component.literal(rpData.getRace()).withStyle(ChatFormatting.BOLD), this.leftPos + 10, this.topPos + 60, 0xFF404040, false);
             }
 
             if(isOwner) {
-                graphics.drawString(font, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.gender").getVisualOrderText(), this.leftPos + 5, this.topPos + 75, 0x404040, false);
+                graphics.text(font, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.gender").getVisualOrderText(), this.leftPos + 5, this.topPos + 75, 0xFF404040, false);
             } else {
-                graphics.drawString(font, Component.literal(convertGenderEnumToButton(rpData.getGender()).getString() + "  " + String.valueOf(rpData.getHeightFeet()) + "'" + String.valueOf(rpData.getHeightInches()) + "\"").withStyle(ChatFormatting.BOLD), this.leftPos + 10, this.topPos + 85, 0x404040, false);
+                graphics.text(font, Component.literal(convertGenderEnumToButton(rpData.getGender()).getString() + "  " + String.valueOf(rpData.getHeightFeet()) + "'" + String.valueOf(rpData.getHeightInches()) + "\"").withStyle(ChatFormatting.BOLD), this.leftPos + 10, this.topPos + 85, 0xFF404040, false);
             }
 
             if(isOwner) {
-                graphics.drawString(font, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.height").getVisualOrderText(), this.leftPos + 5, this.topPos + 100, 0x404040, false);
+                graphics.text(font, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.height").getVisualOrderText(), this.leftPos + 5, this.topPos + 100, 0xFF404040, false);
             }
 
             if(isOwner) {
-                graphics.drawString(font, "'", this.leftPos + 63, this.topPos + 96, 0x404040, false);
-                graphics.drawString(font, "\"", this.leftPos + 93, this.topPos + 96, 0x404040, false);
+                graphics.text(font, "'", this.leftPos + 63, this.topPos + 96, 0xFF404040, false);
+                graphics.text(font, "\"", this.leftPos + 93, this.topPos + 96, 0xFF404040, false);
             }
 
             if(isOwner) {
-                graphics.drawString(font, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.ptm").getVisualOrderText(), this.leftPos + 5, this.topPos + 125, 0x404040, false);
-                graphics.drawString(font, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.ptk").getVisualOrderText(), this.leftPos + 5, this.topPos + 150, 0x404040, false); //0xFF0000
+                graphics.text(font, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.ptm").getVisualOrderText(), this.leftPos + 5, this.topPos + 125, 0xFF404040, false);
+                graphics.text(font, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.ptk").getVisualOrderText(), this.leftPos + 5, this.topPos + 150, 0xFF404040, false); //0xFF0000
             }
             if(!isOwner) {
-                graphics.drawString(font, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.ptm.short"), this.leftPos + 155, this.topPos + 95, 0x404040, false);
-                graphics.drawString(font, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.ptk.short"), this.leftPos + 155, this.topPos + 115, 0x404040, false); //0xFF0000
-                graphics.drawString(font, convertPermissionEnumToButton(rpData.getPermissionToMaim()), this.leftPos + 185, this.topPos + 95, 0xbf1313, false);
-                graphics.drawString(font, convertPermissionEnumToButton(rpData.getPermissionToKill()), this.leftPos + 185, this.topPos + 115, 0xbf1313, false);
+                graphics.text(font, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.ptm.short"), this.leftPos + 155, this.topPos + 95, 0xFF404040, false);
+                graphics.text(font, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.ptk.short"), this.leftPos + 155, this.topPos + 115, 0xFF404040, false); //0xFF0000
+                graphics.text(font, convertPermissionEnumToButton(rpData.getPermissionToMaim()), this.leftPos + 185, this.topPos + 95, 0xFFBF1313, false);
+                graphics.text(font, convertPermissionEnumToButton(rpData.getPermissionToKill()), this.leftPos + 185, this.topPos + 115, 0xFFBF1313, false);
             }
 
             if(isOwner) {
-                graphics.drawString(font, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.desc").getVisualOrderText(), this.leftPos + 5, this.topPos + 177, 0x404040, false);
+                graphics.text(font, Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.desc").getVisualOrderText(), this.leftPos + 5, this.topPos + 177, 0xFF404040, false);
             }
 
-            InventoryScreen.renderEntityInInventoryFollowsMouse(graphics, leftPos + 150, topPos + 20, leftPos + 210, topPos + 90, 32, 0.0625F, mouseX, mouseY, targetPlayer);
+            InventoryScreen.extractEntityInInventoryFollowsMouse(graphics, leftPos + 150, topPos + 20, leftPos + 210, topPos + 90, 32, 0.0625F, mouseX, mouseY, targetPlayer);
 
         } else {
             if(isOwner) {
-                graphics.drawString(font, Component.literal(ClientPlayerRPData.getName() + Component.translatable("gui.rpplayerinfo.rp_info_screen.string.desc.title").getString()), this.leftPos + 8, this.topPos + 6, 0x2e2d2d, false);
+                graphics.text(font, Component.literal(ClientPlayerRPData.getName() + Component.translatable("gui.rpplayerinfo.rp_info_screen.string.desc.title").getString()), this.leftPos + 8, this.topPos + 6, 0xFF2E2D2D, false);
             } else {
-                graphics.drawString(font, Component.literal(rpData.getName() + Component.translatable("gui.rpplayerinfo.rp_info_screen.string.desc.title").getString()), this.leftPos + 8, this.topPos + 6, 0x2e2d2d, false);
+                graphics.text(font, Component.literal(rpData.getName() + Component.translatable("gui.rpplayerinfo.rp_info_screen.string.desc.title").getString()), this.leftPos + 8, this.topPos + 6, 0xFF2E2D2D, false);
                 int n = 0;
                 for(FormattedText text : splitDescriptionString(rpData)) {
-                    graphics.drawString(font, text.getString(), this.leftPos + 6, this.topPos + 24 + n, 0x404040, false);
+                    graphics.text(font, text.getString(), this.leftPos + 6, this.topPos + 24 + n, 0xFF404040, false);
                     n += 8;
                 }
             }
@@ -404,8 +407,12 @@ public class RPInfoScreen extends Screen {
     private void recalcImageWidth() {
         imageWidth = 220;
         imageHeight = (isOwner || isViewingDescription) ? 200 : 136;
-        if(minecraft != null) {
-            init(minecraft, minecraft.getWindow().getGuiScaledWidth(), minecraft.getWindow().getGuiScaledHeight());
+        // Since 26.1, Screen sets `minecraft` in its constructor, so a null check no
+        // longer distinguishes "constructing" from "displayed". Rebuilding during
+        // construction would create widgets while width/height are still 0, and the
+        // real init() would then add a second, correctly-positioned set.
+        if(minecraft != null && minecraft.screen == this) {
+            rebuildWidgets();
         }
     }
 
@@ -431,7 +438,7 @@ public class RPInfoScreen extends Screen {
         if(raceEditBox != null) {
             ClientPlayerRPData.setRace(raceEditBox.getValue());
         }
-        ModMessages.sendToServer(new PlayerDataSyncC2SPacket(ClientPlayerRPData.getPermissionToKill(), ClientPlayerRPData.getPermissionToMaim(), ClientPlayerRPData.getGender(), ClientPlayerRPData.getHeightInches(), ClientPlayerRPData.getHeightFeet(), ClientPlayerRPData.getDescription(), ClientPlayerRPData.getName(), ClientPlayerRPData.getRace()));
+        ClientPacketDistributor.sendToServer(new PlayerDataSyncC2SPacket(ClientPlayerRPData.getPermissionToKill(), ClientPlayerRPData.getPermissionToMaim(), ClientPlayerRPData.getGender(), ClientPlayerRPData.getHeightInches(), ClientPlayerRPData.getHeightFeet(), ClientPlayerRPData.getDescription(), ClientPlayerRPData.getName(), ClientPlayerRPData.getRace()));
     }
 
 }

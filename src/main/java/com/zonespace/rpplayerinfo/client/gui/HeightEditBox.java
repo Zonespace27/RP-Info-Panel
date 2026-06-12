@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.input.CharacterEvent;
 
 public class HeightEditBox extends EditBox {
     private String storedSuggestion;
@@ -18,11 +19,11 @@ public class HeightEditBox extends EditBox {
         super(p_94106_, p_94107_, p_94108_, p_94109_, p_94110_, p_94111_, p_94112_);
     }
 
-    public boolean charTyped(char p_94122_, int p_94123_) {
-        if(!Character.isDigit(p_94122_)) {
+    public boolean charTyped(CharacterEvent event) {
+        if(!Character.isDigit(event.codepoint())) {
             return false;
         }
-        boolean returnValue = super.charTyped(p_94122_, p_94123_);
+        boolean returnValue = super.charTyped(event);
         if(returnValue) {
             setSuggestion("", false); // hack to make sure the suggestion disappears when there's even 1 char inputted
         }

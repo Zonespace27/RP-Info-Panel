@@ -2,7 +2,6 @@ package com.zonespace.rpplayerinfo.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.zonespace.rpplayerinfo.RPPlayerInfo;
-import com.zonespace.rpplayerinfo.networking.ModMessages;
 import com.zonespace.rpplayerinfo.networking.packet.RoundRobinSyncC2SPacket;
 
 import net.minecraft.client.KeyMapping;
@@ -14,6 +13,7 @@ import net.minecraft.world.phys.HitResult;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.common.NeoForge;
 
@@ -23,7 +23,7 @@ public class KeybindHandler {
     public static final int KEY_APOSTROPHE = 39;
 
     public static final KeyMapping OPEN_RP_MENU_KEYBIND = new KeyMapping("key." + RPPlayerInfo.MODID + ".open_rp_menu",
-		KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM.getOrCreate(KEY_APOSTROPHE), "key.categories.misc");
+		KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM.getOrCreate(KEY_APOSTROPHE), KeyMapping.Category.MISC);
 
     public static void registerKeyMappings(RegisterKeyMappingsEvent event) {
 		event.register(OPEN_RP_MENU_KEYBIND);
@@ -35,7 +35,7 @@ public class KeybindHandler {
 
     public static void handleKeyInputEvent(ClientTickEvent.Post event) {
         if(OPEN_RP_MENU_KEYBIND.consumeClick()) {
-			ModMessages.sendToServer(new RoundRobinSyncC2SPacket());
+			ClientPacketDistributor.sendToServer(new RoundRobinSyncC2SPacket());
             openRPMenu();
         }
     }
