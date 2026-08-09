@@ -18,6 +18,7 @@ import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.zonespace.rpplayerinfo.RPPlayerInfo;
 import com.zonespace.rpplayerinfo.client.ClientPlayerRPData;
+import com.zonespace.rpplayerinfo.client.ClientRPDataCache;
 import com.zonespace.rpplayerinfo.data.EPlayerGender;
 import com.zonespace.rpplayerinfo.data.EPlayerPermission;
 import com.zonespace.rpplayerinfo.data.PlayerRPData;
@@ -333,7 +334,7 @@ public class RPInfoScreen extends Screen {
          
         super.render(graphics, mouseX, mouseY, partialTicks);
 
-        PlayerRPData rpData = targetPlayer.getCapability(PlayerRPDataProvider.PLAYER_RP_DATA).resolve().get();
+        PlayerRPData rpData = ClientRPDataCache.get(targetPlayer.getUUID());
 
         if(!isViewingDescription) {
             graphics.drawString(font, Component.literal(targetPlayer.getName().getString() + Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.title").getString()), this.leftPos + 8, this.topPos + 6, 0x2e2d2d, false);
