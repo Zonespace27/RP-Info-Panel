@@ -20,6 +20,7 @@ import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
 import com.zonespace.rpplayerinfo.RPPlayerInfo;
 import com.zonespace.rpplayerinfo.client.ClientPlayerRPData;
+import com.zonespace.rpplayerinfo.client.ClientRPDataCache;
 import com.zonespace.rpplayerinfo.data.EPlayerGender;
 import com.zonespace.rpplayerinfo.data.EPlayerPermission;
 import com.zonespace.rpplayerinfo.data.PlayerRPData;
@@ -318,7 +319,7 @@ public class RPInfoScreen extends Screen {
         blit(graphics, leftPos, topPos, 0, 0, imageWidth, imageHeight);
         super.render(graphics, mouseX, mouseY, partialTicks);
 
-        PlayerRPData rpData = targetPlayer.getCapability(PlayerRPDataProvider.PLAYER_RP_DATA).resolve().get();
+        PlayerRPData rpData = ClientRPDataCache.get(targetPlayer.getUUID());
 
         if(!isViewingDescription) {
             font.draw(graphics, Component.literal(targetPlayer.getName().getString() + Component.translatable("gui." + RPPlayerInfo.MODID + ".rp_info_screen.string.title").getString()), this.leftPos + 8, this.topPos + 6, 0x2e2d2d);

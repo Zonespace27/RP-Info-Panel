@@ -6,6 +6,7 @@ import com.zonespace.rpplayerinfo.data.PlayerRPDataProvider;
 import com.zonespace.rpplayerinfo.networking.ModMessages;
 import com.zonespace.rpplayerinfo.networking.packet.PlayerDataSyncS2CPacket;
 import com.zonespace.rpplayerinfo.networking.packet.PlayerLoginSyncS2CPacket;
+import com.zonespace.rpplayerinfo.networking.packet.PlayerToPlayerSyncS2CPacket;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -48,6 +49,8 @@ public class RPPlayerInfo
         @SubscribeEvent
         public static void clientSetup(FMLClientSetupEvent event) {
             KeybindHandler.register();
+            MinecraftForge.EVENT_BUS.addListener((net.minecraftforge.client.event.ClientPlayerNetworkEvent.LoggingOut e) ->
+                com.zonespace.rpplayerinfo.client.ClientRPDataCache.clear());
         }
     }
 
@@ -123,8 +126,19 @@ public class RPPlayerInfo
         ServerPlayer player = (ServerPlayer)event.getEntity();
         PlayerRPData rpData = player.getCapability(PlayerRPDataProvider.PLAYER_RP_DATA).resolve().get();
         ModMessages.sendToPlayer(new PlayerDataSyncS2CPacket(rpData.getPermissionToKill(), rpData.getPermissionToMaim(), rpData.getGender(), rpData.getHeightInches(), rpData.getHeightFeet(), rpData.getDescription(), rpData.getName(), rpData.getRace()), player);
+        // The server's stored data is authoritative: push the new player's data to
+        // everyone, and every existing player's data to the new player, directly.
         for(ServerPlayer serverPlayer : player.getLevel().getServer().getPlayerList().getPlayers()) {
-            ModMessages.sendToPlayer(new PlayerLoginSyncS2CPacket(), serverPlayer);
+            ModMessages.sendToPlayer(makeP2PPacket(serverPlayer), player);
+            if(serverPlayer != player) {
+                ModMessages.sendToPlayer(makeP2PPacket(player), serverPlayer);
+            }
         }
+    }
+
+    @SuppressWarnings("null")
+    private static PlayerToPlayerSyncS2CPacket makeP2PPacket(ServerPlayer player) {
+        PlayerRPData rpData = player.getCapability(PlayerRPDataProvider.PLAYER_RP_DATA).resolve().get();
+        return new PlayerToPlayerSyncS2CPacket(rpData.getPermissionToKill(), rpData.getPermissionToMaim(), rpData.getGender(), rpData.getHeightInches(), rpData.getHeightFeet(), rpData.getDescription(), rpData.getName(), rpData.getRace(), player.getUUID());
     }
 }
